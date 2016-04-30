@@ -1,0 +1,40 @@
+---
+title: "Nipple"
+author: "Hyunsu Lee"
+date: "April 30, 2016"
+output: html_document
+---
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+## Data load & summary
+```{r, echo=FALSE}
+require(ggplot2)
+nipple <- read.csv("nippleKrp_Wt.csv", header = TRUE)
+head(nipple)
+
+```
+
+## Data subsetting
+```{r, echo=FALSE}
+
+nipplefulvar <- colnames(nipple)
+nipplesubvar <- nipplefulvar[1:14]
+nipplesub <- nipple[nipplesubvar]
+colnames(nipplesub) <- c("id","der1", "der2", "der3", "wt1", "wt2","wt3","der_avr","wt_avr", "der_wt","Fold_change", "gene.acc","gene.symbol","gene.desc")
+nipplesub.t <-t(nipplesub[2:7])
+gene.sym <- nipplesub$gene.symbol
+colnames(nipplesub.t) <- gene.sym
+
+```
+
+## PCA
+```{r, echo=FALSE}
+nipple.pca <- prcomp(nipplesub.t, cor=TRUE)
+summary(nipple.pca)
+plot(nipple.pca)
+biplot(nipple.pca)
+
+```
+
+
