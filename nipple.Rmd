@@ -11,7 +11,7 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 ```{r, echo=FALSE}
 require(ggplot2)
 nipple <- read.csv("nippleKrp_Wt.csv", header = TRUE)
-head(nipple)
+##head(nipple)
 
 ```
 
@@ -22,17 +22,16 @@ nipplefulvar <- colnames(nipple)
 nipplesubvar <- nipplefulvar[1:14]
 nipplesub <- nipple[nipplesubvar]
 colnames(nipplesub) <- c("id","der1", "der2", "der3", "wt1", "wt2","wt3","der_avr","wt_avr", "der_wt","Fold_change", "gene.acc","gene.symbol","gene.desc")
-nipplesub.t <-t(nipplesub[2:7])
+nipplesub.t <-t(nipplesub[2:7]) # matrix transpose, col에 gene, raw에 실험이 가도록
 gene.sym <- nipplesub$gene.symbol
-colnames(nipplesub.t) <- gene.sym
-
+colnames(nipplesub.t) <- gene.sym # column name을 gene symbol로 바꿈.
 ```
 
 ## PCA
 ```{r, echo=FALSE}
-nipple.pca <- prcomp(nipplesub.t, cor=TRUE)
-summary(nipple.pca)
-plot(nipple.pca)
+nipple.pca <- prcomp(nipplesub.t, scale=TRUE) # PCA 시행.
+summary(nipple.pca, scale = TRUE)
+screeplot(nipple.pca, scale =TRUE)
 biplot(nipple.pca)
 
 ```
