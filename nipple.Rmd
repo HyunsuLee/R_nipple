@@ -22,18 +22,27 @@ nipplefulvar <- colnames(nipple)
 nipplesubvar <- nipplefulvar[1:14]
 nipplesub <- nipple[nipplesubvar]
 colnames(nipplesub) <- c("id","der1", "der2", "der3", "wt1", "wt2","wt3","der_avr","wt_avr", "der_wt","Fold_change", "gene.acc","gene.symbol","gene.desc")
-nipplesub.t <-t(nipplesub[2:7]) # matrix transpose, col에 gene, raw에 실험이 가도록
-gene.sym <- nipplesub$gene.symbol
-colnames(nipplesub.t) <- gene.sym # column name을 gene symbol로 바꿈.
+nipplesub.deg <- subset(nipplesub, Fold_change > 1.5 | Fold_change <0.67)
+# nipplesub.t <-t(nipplesub[2:7]) # matrix transpose, col에 gene, raw에 실험이 가도록
+nipplesub.deg.t <-t(nipplesub.deg[2:7])
+# gene.sym <- nipplesub$gene.symbol
+# colnames(nipplesub.t) <- gene.sym # column name을 gene symbol로 바꿈.
+gene.sym.deg <- nipplesub.deg$gene.symbol
+colnames(nipplesub.deg.t) <- gene.sym.deg
 ```
 
 ## PCA
 ```{r, echo=FALSE}
+'''
 nipple.pca <- prcomp(nipplesub.t, scale=TRUE) # PCA 시행.
 summary(nipple.pca, scale = TRUE)
 screeplot(nipple.pca, scale =TRUE)
 biplot(nipple.pca)
-
+'''
+nipple.pca.deg <- prcomp(nipplesub.deg.t, scale. =TRUE) # PCA 시행.
+summary(nipple.pca.deg, scale. = TRUE)
+screeplot(nipple.pca.deg)
+biplot(nipple.pca.deg)
 ```
 
 
