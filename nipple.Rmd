@@ -42,7 +42,19 @@ biplot(nipple.pca)
 nipple.pca.deg <- prcomp(nipplesub.deg.t, scale. =TRUE) # PCA 시행.
 summary(nipple.pca.deg, scale. = TRUE)
 screeplot(nipple.pca.deg)
-biplot(nipple.pca.deg)
+nipple.pca.deg.var = nipple.pca.deg$sdev ^ 2 # 주성분들의 분산 계산
+nipple.pca.deg.pve = nipple.pca.deg.var / sum(nipple.pca.deg.var) #주성분 분산의 propotion 계산
+plot (nipple.pca.deg.pve, xlab = "Principal Component", ylab = "Propotion of Variance Explained", ylim = c(0,1), type = "b")
+PCA.scores = nipple.pca.deg$x
+# biplot(nipple.pca.deg, var.axes = FALSE, scale = 1, pc.biplot = FALSE)
+PCA.scores.df = data.frame(PCA.scores)
+g <- ggplot(PCA.scores.df, aes(PC1,PC2), label = rownames(PCA.scores.df) , size=I(3)) + geom_point(aes(colours = rownames(PCA.scores.df)))
+
+g <- g + scale_color_manual(values = c("orange","red", "pink", "blue", "black", "purple")) +theme(legend.position="none")
+g <- geom_text(aes(colour = rownames(PCA.scores.df)), label = rownames(PCA.scores.df), nudge_x = 5)
+
+g + scale_color_manual(values = c("orange","red", "pink", "blue", "black", "purple"))
+
 ```
 
 
