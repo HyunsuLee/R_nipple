@@ -40,11 +40,23 @@ nipple.pca.var = nipple.pca$sdev ^ 2 # 주성분들의 분산 계산
 nipple.pca.pve = nipple.pca.var / sum(nipple.pca.var) #주성분 분산의 propotion 계산
 plot (nipple.pca.pve, xlab = "Principal Component", ylab = "Propotion of Variance Explained", ylim = c(0,0.4), type = "b")
 nipple.pca.scores = data.frame(nipple.pca$x) #PC들만 따로 뽑기.
-group <- factor(c("KrP", "KrP", "KrP", "WT","WT","WT"))
-rep <- factor(c("Rep1", "Rep2", "Rep3","Rep1", "Rep2", "Rep3" ))
-nipple.pca.scores <- cbind(nipple.pca.scores, group, rep)
-graph <- ggplot(nipple.pca.scores, aes(PC1, PC2)) + geom_point(aes(color = group), size = I(3)) #point 로 그림 그리기
-graph + geom_text(aes(label=rep, color= group), size =4, nudge_x= 17) #text추가
+
+group <- factor(c("KrP", "KrP", "KrP", "WT","WT","WT")) # gene group naming
+rep <- factor(c("Rep1", "Rep2", "Rep3","Rep1", "Rep2", "Rep3" )) # replication naming
+nipple.pca.scores <- cbind(nipple.pca.scores, group, rep) # PC matrix에 data labeling
+
+#graph 그리기
+ggplot(nipple.pca.scores, aes(PC1, PC2)) + 
+  # point layer 추가, 이중 point 로 그림 그리기
+  geom_point(aes(color=group), size = 4) +
+  geom_point(color="#FFFFFF", size = 1.5, show.legend = TRUE) +
+  # Point 오른쪽에 text 추가
+  geom_text(aes(label=rep, color= group), size =5, nudge_x= 25, show.legend = FALSE) +
+  # 배경을 하얀색으로, axis label size과 title size 조절
+  theme_bw() + theme(axis.text =element_text(size = rel(1.2))) +
+  theme(axis.title=element_text(size=rel(1.5))) +
+  # legend tilte없애고, box를 하얀색으로 안보이게, legend size조절.
+  theme(legend.title=element_blank(),legend.key = element_rect(color = "#FFFFFF"), legend.text = element_text(size = rel(1.2) ))
 
 ```
 
