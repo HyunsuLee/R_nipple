@@ -12,7 +12,6 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 require(ggplot2)
 nipple <- read.csv("nippleKrp_Wt.csv", header = TRUE)
 ##head(nipple)
-
 ```
 
 ## Data subsetting
