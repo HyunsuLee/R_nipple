@@ -21,39 +21,30 @@ nipple <- read.csv("nippleKrp_Wt.csv", header = TRUE)
 nipplefulvar <- colnames(nipple)
 nipplesubvar <- nipplefulvar[1:14]
 nipplesub <- nipple[nipplesubvar]
-colnames(nipplesub) <- c("id","der1", "der2", "der3", "wt1", "wt2","wt3","der_avr","wt_avr", "der_wt","Fold_change", "gene.acc","gene.symbol","gene.desc")
-nipplesub.deg <- subset(nipplesub, Fold_change > 1.5 | Fold_change <0.67)
-# nipplesub.t <-t(nipplesub[2:7]) # matrix transpose, col에 gene, raw에 실험이 가도록
-nipplesub.deg.t <-t(nipplesub.deg[2:7])
-# gene.sym <- nipplesub$gene.symbol
-# colnames(nipplesub.t) <- gene.sym # column name을 gene symbol로 바꿈.
-gene.sym.deg <- nipplesub.deg$gene.symbol
-colnames(nipplesub.deg.t) <- gene.sym.deg
+colnames(nipplesub) <- c("id","krp1", "krp2", "krp3", "wt1", "wt2","wt3","der_avr","wt_avr", "krp_avr","Fold_change", "gene.acc","gene.symbol","gene.desc")
+nipplesub.t <-data.frame(t(nipplesub[2:7])) # matrix transpose, col에 gene, raw에 실험이 가도록
+colnames(nipplesub.t) <- nipplesub$gene.symbol # column name을 gene symbol로 바꿈.
+# 이 아래쪽은 fold change가 큰 gene들, 즉 DEG에 대해서만 PCA를 할 경우 사용.
+# nipplesub.deg <- subset(nipplesub, Fold_change > 1.5 | Fold_change <0.67)
+# nipplesub.deg.t <-t(nipplesub.deg[2:7])
+# gene.sym.deg <- nipplesub.deg$gene.symbol
+# colnames(nipplesub.deg.t) <- gene.sym.deg
 ```
 
 ## PCA
 ```{r, echo=FALSE}
-'''
-nipple.pca <- prcomp(nipplesub.t, scale=TRUE) # PCA 시행.
-summary(nipple.pca, scale = TRUE)
-screeplot(nipple.pca, scale =TRUE)
-biplot(nipple.pca)
-'''
-nipple.pca.deg <- prcomp(nipplesub.deg.t, scale. =TRUE) # PCA 시행.
-summary(nipple.pca.deg, scale. = TRUE)
-screeplot(nipple.pca.deg)
-nipple.pca.deg.var = nipple.pca.deg$sdev ^ 2 # 주성분들의 분산 계산
-nipple.pca.deg.pve = nipple.pca.deg.var / sum(nipple.pca.deg.var) #주성분 분산의 propotion 계산
-plot (nipple.pca.deg.pve, xlab = "Principal Component", ylab = "Propotion of Variance Explained", ylim = c(0,1), type = "b")
-PCA.scores = nipple.pca.deg$x
-# biplot(nipple.pca.deg, var.axes = FALSE, scale = 1, pc.biplot = FALSE)
-PCA.scores.df = data.frame(PCA.scores)
-g <- ggplot(PCA.scores.df, aes(PC1,PC2), label = rownames(PCA.scores.df) , size=I(3)) + geom_point(aes(colours = rownames(PCA.scores.df)))
-
-g <- g + scale_color_manual(values = c("orange","red", "pink", "blue", "black", "purple")) +theme(legend.position="none")
-g <- geom_text(aes(colour = rownames(PCA.scores.df)), label = rownames(PCA.scores.df), nudge_x = 5)
-
-g + scale_color_manual(values = c("orange","red", "pink", "blue", "black", "purple"))
+nipple.pca <- prcomp(nipplesub.t, scale. =TRUE) # PCA 시행.
+summary(nipple.pca)
+# screeplot(nipple.pca) PC들의 분산들에 대해 plot. 이것 보단 variance propotion이 나은듯.
+nipple.pca.var = nipple.pca$sdev ^ 2 # 주성분들의 분산 계산
+nipple.pca.pve = nipple.pca.var / sum(nipple.pca.var) #주성분 분산의 propotion 계산
+plot (nipple.pca.pve, xlab = "Principal Component", ylab = "Propotion of Variance Explained", ylim = c(0,0.4), type = "b")
+nipple.pca.scores = data.frame(nipple.pca$x) #PC들만 따로 뽑기.
+group <- factor(c("KrP", "KrP", "KrP", "WT","WT","WT"))
+rep <- factor(c("Rep1", "Rep2", "Rep3","Rep1", "Rep2", "Rep3" ))
+nipple.pca.scores <- cbind(nipple.pca.scores, group, rep)
+graph <- ggplot(nipple.pca.scores, aes(PC1, PC2)) + geom_point(aes(color = group), size = I(3)) #point 로 그림 그리기
+graph + geom_text(aes(label=rep, color= group), size =4, nudge_x= 17) #text추가
 
 ```
 
