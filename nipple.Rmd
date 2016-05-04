@@ -10,47 +10,115 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 ## Data load & summary
 ```{r, echo=FALSE}
 require(ggplot2)
-nipple <- read.csv("nippleKrp_Wt.csv", header = TRUE)
+require(ggrepel)
+krp_wt <- read.csv("nippleKrp_Wt.csv", header = TRUE)
+human <- read.csv("Human.csv", header = TRUE)
+mouse_est <- read.csv("mouse_estrogen.csv", header = TRUE)
 ##head(nipple)
 ```
 
 ## Data subsetting
 ```{r, echo=FALSE}
+# KrP vs WT data subsetting
+krp_wt_fulvar <- colnames(krp_wt)
+krp_wt_subvar <- krp_wt_fulvar[1:14]
+krp_wt_sub <- krp_wt[krp_wt_subvar]
+colnames(krp_wt_sub) <- c("id","krp1", "krp2", "krp3", "wt1", "wt2","wt3","der_avr","wt_avr", "krp_avr","Fold_change", "gene.acc","gene.symbol","gene.desc")
+krp_wt_sub.t <-data.frame(t(krp_wt_sub[2:7])) # matrix transpose, col에 gene, raw에 실험이 가도록
+colnames(krp_wt_sub.t) <- krp_wt_sub$gene.symbol # column name을 gene symbol로 바꿈.
 
-nipplefulvar <- colnames(nipple)
-nipplesubvar <- nipplefulvar[1:14]
-nipplesub <- nipple[nipplesubvar]
-colnames(nipplesub) <- c("id","krp1", "krp2", "krp3", "wt1", "wt2","wt3","der_avr","wt_avr", "krp_avr","Fold_change", "gene.acc","gene.symbol","gene.desc")
-nipplesub.t <-data.frame(t(nipplesub[2:7])) # matrix transpose, col에 gene, raw에 실험이 가도록
-colnames(nipplesub.t) <- nipplesub$gene.symbol # column name을 gene symbol로 바꿈.
-# 이 아래쪽은 fold change가 큰 gene들, 즉 DEG에 대해서만 PCA를 할 경우 사용.
-# nipplesub.deg <- subset(nipplesub, Fold_change > 1.5 | Fold_change <0.67)
-# nipplesub.deg.t <-t(nipplesub.deg[2:7])
-# gene.sym.deg <- nipplesub.deg$gene.symbol
-# colnames(nipplesub.deg.t) <- gene.sym.deg
+# Human analysis
+human_fulvar <- colnames(human)
+human_subvar <- human_fulvar[1:16]
+human_sub <- human[human_subvar]
+colnames(human_sub) <- c("id","gene.sym", "gene.title", "CS1", "CS2", "CS3","CS4","Skin_Bd","Skin_Sg", "Skin4","Skin1", "Skin5_1","Skin5_2","Skin10", "MamGld10","MamGld9")
+human_sub.t <- data.frame(t(human_sub[4:16]))
+colnames(human_sub.t) <- human_sub$gene.sym
+
+# mouse estrogen set.
+mouse_est_fulvar <- colnames(mouse_est)
+mouse_est_subvar <- mouse_est_fulvar[1:9]
+mouse_est_sub <- mouse_est[mouse_est_subvar]
+colnames(mouse_est_sub) <- c("id","gene.sym", "gene.desc", "Str.vehicle.rep1", "Str.vehicle.rep2", "Str.vehicle.rep3","Str.estrogen.rep1","Str.estrogen.rep2","Str.estrogen.rep3")
+mouse_est_sub.t <- data.frame(t(mouse_est_sub[4:9]))
+colnames(mouse_est_sub.t) <- mouse_est_sub$gene.sym
+# 이 아래쪽은 fold change가 큰 gene들, 즉 DEG에 대해서 subsetting 할때
+# krp_wt_sub.deg <- subset(krp_wt_sub, Fold_change > 1.5 | Fold_change <0.67)
+
+
 ```
 
 ## PCA
 ```{r, echo=FALSE}
-nipple.pca <- prcomp(nipplesub.t, scale. =TRUE) # PCA 시행.
-summary(nipple.pca)
+
+#KrP vs WT PCA and plotting.
+krp_wt.pca <- prcomp(krp_wt_sub.t, scale. =TRUE) # PCA 시행.
+summary(krp_wt.pca)
 # screeplot(nipple.pca) PC들의 분산들에 대해 plot. 이것 보단 variance propotion이 나은듯.
-nipple.pca.var = nipple.pca$sdev ^ 2 # 주성분들의 분산 계산
-nipple.pca.pve = nipple.pca.var / sum(nipple.pca.var) #주성분 분산의 propotion 계산
-plot (nipple.pca.pve, xlab = "Principal Component", ylab = "Propotion of Variance Explained", ylim = c(0,0.4), type = "b")
-nipple.pca.scores = data.frame(nipple.pca$x) #PC들만 따로 뽑기.
+krp_wt.pca.var = krp_wt.pca$sdev ^ 2 # 주성분들의 분산 계산
+krp_wt.pca.pve = krp_wt.pca.var / sum(krp_wt.pca.var) #주성분 분산의 propotion 계산
+plot (krp_wt.pca.pve, xlab = "Principal Component", ylab = "Propotion of Variance Explained", ylim = c(0,0.4), type = "b")
+krp_wt.pca.scores = data.frame(krp_wt.pca$x) #PC들만 따로 뽑기.
 
 group <- factor(c("KrP", "KrP", "KrP", "WT","WT","WT")) # gene group naming
 rep <- factor(c("Rep1", "Rep2", "Rep3","Rep1", "Rep2", "Rep3" )) # replication naming
-nipple.pca.scores <- cbind(nipple.pca.scores, group, rep) # PC matrix에 data labeling
+krp_wt.pca.scores <- cbind(krp_wt.pca.scores, group, rep) # PC matrix에 data labeling
 
 #graph 그리기
-ggplot(nipple.pca.scores, aes(PC1, PC2)) + 
+ggplot(krp_wt.pca.scores, aes(PC1, PC2)) + 
   # point layer 추가, 이중 point 로 그림 그리기
   geom_point(aes(color=group), size = 4) +
   geom_point(color="#FFFFFF", size = 1.5, show.legend = TRUE) +
   # Point 오른쪽에 text 추가
   geom_text(aes(label=rep, color= group), size =5, nudge_x= 25, show.legend = FALSE) +
+  # 배경을 하얀색으로, axis label size과 title size 조절
+  theme_bw() + theme(axis.text =element_text(size = rel(1.2))) +
+  theme(axis.title=element_text(size=rel(1.5))) +
+  # legend tilte없애고, box를 하얀색으로 안보이게, legend size조절.
+  theme(legend.title=element_blank(),legend.key = element_rect(color = "#FFFFFF"), legend.text = element_text(size = rel(1.2) ))
+
+#human PCA and plotting
+human.pca <- prcomp(human_sub.t, scale. =TRUE) # PCA 시행.
+summary(human.pca)
+# screeplot(nipple.pca) PC들의 분산들에 대해 plot. 이것 보단 variance propotion이 나은듯.
+human.pca.var = human.pca$sdev ^ 2 # 주성분들의 분산 계산
+human.pca.pve = human.pca.var / sum(human.pca.var) #주성분 분산의 propotion 계산
+plot (human.pca.pve, xlab = "Principal Component", ylab = "Propotion of Variance Explained", ylim = c(0,0.4), type = "b")
+human.pca.scores = data.frame(human.pca$x) #PC들만 따로 뽑기.
+
+
+
+ggplot(human.pca.scores, aes(PC1, PC2)) + 
+  # point layer 추가, 이중 point 로 그림 그리기
+  geom_point(aes(color=rownames(human.pca.scores)), size = 4) +
+  geom_point(color="#FFFFFF", size = 1.5, show.legend = TRUE) +
+  # Point 오른쪽에 text 추가
+  geom_text_repel(aes(label=rownames(human.pca.scores)), size =5, nudge_x= 25, show.legend = FALSE) +
+  # 배경을 하얀색으로, axis label size과 title size 조절
+  theme_bw() + theme(axis.text =element_text(size = rel(1.2))) +
+  theme(axis.title=element_text(size=rel(1.5))) +
+  # legend tilte없애고, box를 하얀색으로 안보이게, legend size조절.
+  theme(legend.title=element_blank(),legend.key = element_rect(color = "#FFFFFF"), legend.text = element_text(size = rel(1.2) ))
+
+
+# mouse stromal cell. estrogen vs vehicle PCA and plotting
+mouse_est.pca <- prcomp(mouse_est_sub.t, scale. =TRUE) # PCA 시행.
+summary(mouse_est.pca)
+# screeplot(nipple.pca) PC들의 분산들에 대해 plot. 이것 보단 variance propotion이 나은듯.
+mouse_est.pca.var = mouse_est.pca$sdev ^ 2 # 주성분들의 분산 계산
+mouse_est.pca.pve = mouse_est.pca.var / sum(mouse_est.pca.var) #주성분 분산의 propotion 계산
+plot (mouse_est.pca.pve, xlab = "Principal Component", ylab = "Propotion of Variance Explained", ylim = c(0,0.4), type = "b")
+mouse_est.pca.scores = data.frame(mouse_est.pca$x) #PC들만 따로 뽑기.
+
+group_mouse <- factor(c("Vehicle", "Vehicle", "Vehicle", "Estrogen","Estrogen","Estrogen")) # gene group naming
+mouse_est.pca.scores <- cbind(mouse_est.pca.scores, group_mouse, rep) # PC matrix에 data labeling
+
+ggplot(mouse_est.pca.scores, aes(PC1, PC2)) + 
+  # point layer 추가, 이중 point 로 그림 그리기
+  geom_point(aes(color=group_mouse), size = 4) +
+  geom_point(color="#FFFFFF", size = 1.5, show.legend = TRUE) +
+  # Point 오른쪽에 text 추가
+  geom_text(aes(label=rep, color= group_mouse), size =5, nudge_x= 25, show.legend = FALSE) +
   # 배경을 하얀색으로, axis label size과 title size 조절
   theme_bw() + theme(axis.text =element_text(size = rel(1.2))) +
   theme(axis.title=element_text(size=rel(1.5))) +
