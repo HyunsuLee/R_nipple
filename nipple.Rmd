@@ -14,6 +14,8 @@ require(ggrepel)
 krp_wt <- read.csv("nippleKrp_Wt.csv", header = TRUE)
 human <- read.csv("Human.csv", header = TRUE)
 mouse_est <- read.csv("mouse_estrogen.csv", header = TRUE)
+human_raw <- read.csv("Raw_human.csv", header = TRUE)
+mouse_raw <- read.csv("Raw_mouse.csv", header = TRUE)
 ##head(nipple)
 ```
 
@@ -35,6 +37,13 @@ colnames(human_sub) <- c("id","gene.sym", "gene.title", "CS1", "CS2", "CS3","CS4
 human_sub.t <- data.frame(t(human_sub[4:16]))
 colnames(human_sub.t) <- human_sub$gene.sym
 
+# Human raw subsetting(log를 안취한 data)
+human_raw_sub <- human_raw
+colnames(human_raw_sub) <- c("id","gene.sym", "gene.title", "CS1", "CS2", "CS3","CS4","Skin_Bd","Skin_Sg","Skin1.Ds", "Skin4.Nr","Skin1.Nr", "Skin2.Ds", "Skin3.Ds", "Skin5_1","Skin5_2","MamGld10","MamGld9", "Skin10.Nr")
+human_raw_sub.t <- data.frame(t(human_raw_sub[4:19]))
+colnames(human_raw_sub.t) <- human_raw_sub$gene.sym
+human_raw_log.t <- log2(human_raw_sub.t)
+
 # mouse estrogen set.
 mouse_est_fulvar <- colnames(mouse_est)
 mouse_est_subvar <- mouse_est_fulvar[1:9]
@@ -42,6 +51,13 @@ mouse_est_sub <- mouse_est[mouse_est_subvar]
 colnames(mouse_est_sub) <- c("id","gene.sym", "gene.desc", "Str.vehicle.rep1", "Str.vehicle.rep2", "Str.vehicle.rep3","Str.estrogen.rep1","Str.estrogen.rep2","Str.estrogen.rep3")
 mouse_est_sub.t <- data.frame(t(mouse_est_sub[4:9]))
 colnames(mouse_est_sub.t) <- mouse_est_sub$gene.sym
+
+# mouse log2(raw) subsetting 이 data는 음수를 0으로 바꾸지 않은것.
+mouse_raw_sub <- mouse_raw[mouse_est_subvar]
+colnames(mouse_raw_sub) <- c("id","gene.sym", "gene.desc", "Str.vehicle.rep1", "Str.vehicle.rep2", "Str.vehicle.rep3","Str.estrogen.rep1","Str.estrogen.rep2","Str.estrogen.rep3")
+mouse_raw_sub.t <- data.frame(t(mouse_raw_sub[4:9]))
+colnames(mouse_raw_sub.t) <- mouse_raw_sub$gene.sym
+
 # 이 아래쪽은 fold change가 큰 gene들, 즉 DEG에 대해서 subsetting 할때
 # krp_wt_sub.deg <- subset(krp_wt_sub, Fold_change > 1.5 | Fold_change <0.67)
 
@@ -49,9 +65,12 @@ colnames(mouse_est_sub.t) <- mouse_est_sub$gene.sym
 ```
 
 ## PCA
+--
+### KrP vs WT PCA
 ```{r, echo=FALSE}
 
 #KrP vs WT PCA and plotting.
+
 krp_wt.pca <- prcomp(krp_wt_sub.t, scale. =TRUE) # PCA 시행.
 summary(krp_wt.pca)
 # screeplot(nipple.pca) PC들의 분산들에 대해 plot. 이것 보단 variance propotion이 나은듯.
@@ -77,7 +96,47 @@ ggplot(krp_wt.pca.scores, aes(PC1, PC2)) +
   # legend tilte없애고, box를 하얀색으로 안보이게, legend size조절.
   theme(legend.title=element_blank(),legend.key = element_rect(color = "#FFFFFF"), legend.text = element_text(size = rel(1.2) ))
 
-#human PCA and plotting
+ggplot(krp_wt.pca.scores, aes(PC1, PC3)) + 
+  # point layer 추가, 이중 point 로 그림 그리기
+  geom_point(aes(color=group), size = 4) +
+  geom_point(color="#FFFFFF", size = 1.5, show.legend = TRUE) +
+  # Point 오른쪽에 text 추가
+  geom_text(aes(label=rep, color= group), size =5, nudge_x= 25, show.legend = FALSE) +
+  # 배경을 하얀색으로, axis label size과 title size 조절
+  theme_bw() + theme(axis.text =element_text(size = rel(1.2))) +
+  theme(axis.title=element_text(size=rel(1.5))) +
+  # legend tilte없애고, box를 하얀색으로 안보이게, legend size조절.
+  theme(legend.title=element_blank(),legend.key = element_rect(color = "#FFFFFF"), legend.text = element_text(size = rel(1.2) ))
+
+ggplot(krp_wt.pca.scores, aes(PC1, PC4)) + 
+  # point layer 추가, 이중 point 로 그림 그리기
+  geom_point(aes(color=group), size = 4) +
+  geom_point(color="#FFFFFF", size = 1.5, show.legend = TRUE) +
+  # Point 오른쪽에 text 추가
+  geom_text(aes(label=rep, color= group), size =5, nudge_x= 25, show.legend = FALSE) +
+  # 배경을 하얀색으로, axis label size과 title size 조절
+  theme_bw() + theme(axis.text =element_text(size = rel(1.2))) +
+  theme(axis.title=element_text(size=rel(1.5))) +
+  # legend tilte없애고, box를 하얀색으로 안보이게, legend size조절.
+  theme(legend.title=element_blank(),legend.key = element_rect(color = "#FFFFFF"), legend.text = element_text(size = rel(1.2) ))
+
+ggplot(krp_wt.pca.scores, aes(PC2, PC3)) + 
+  # point layer 추가, 이중 point 로 그림 그리기
+  geom_point(aes(color=group), size = 4) +
+  geom_point(color="#FFFFFF", size = 1.5, show.legend = TRUE) +
+  # Point 오른쪽에 text 추가
+  geom_text(aes(label=rep, color= group), size =5, nudge_x= 25, show.legend = FALSE) +
+  # 배경을 하얀색으로, axis label size과 title size 조절
+  theme_bw() + theme(axis.text =element_text(size = rel(1.2))) +
+  theme(axis.title=element_text(size=rel(1.5))) +
+  # legend tilte없애고, box를 하얀색으로 안보이게, legend size조절.
+  theme(legend.title=element_blank(),legend.key = element_rect(color = "#FFFFFF"), legend.text = element_text(size = rel(1.2) ))
+```
+
+### human PCA and plotting. 이건 log치환후 음수를 0으로 한것들.
+```{r, echo=FALSE}
+
+
 human.pca <- prcomp(human_sub.t, scale. =TRUE) # PCA 시행.
 summary(human.pca)
 # screeplot(nipple.pca) PC들의 분산들에 대해 plot. 이것 보단 variance propotion이 나은듯.
@@ -100,9 +159,68 @@ ggplot(human.pca.scores, aes(PC1, PC2)) +
   # legend tilte없애고, box를 하얀색으로 안보이게, legend size조절.
   theme(legend.title=element_blank(),legend.key = element_rect(color = "#FFFFFF"), legend.text = element_text(size = rel(1.2) ))
 
+```
 
-# mouse stromal cell. estrogen vs vehicle PCA and plotting
-mouse_est.pca <- prcomp(mouse_est_sub.t, scale. =TRUE) # PCA 시행.
+### human PCA and plotting. 이건 log치환안한것.
+```{r, echo=FALSE}
+
+human.raw.pca <- prcomp(human_raw_sub.t, scale. =TRUE) # PCA 시행.
+summary(human.raw.pca)
+# screeplot(nipple.pca) PC들의 분산들에 대해 plot. 이것 보단 variance propotion이 나은듯.
+human.raw.pca.var = human.raw.pca$sdev ^ 2 # 주성분들의 분산 계산
+human.raw.pca.pve = human.raw.pca.var / sum(human.raw.pca.var) #주성분 분산의 propotion 계산
+plot (human.raw.pca.pve, xlab = "Principal Component", ylab = "Propotion of Variance Explained", ylim = c(0,0.4), type = "b")
+human.raw.pca.scores = data.frame(human.raw.pca$x) #PC들만 따로 뽑기.
+
+
+
+ggplot(human.raw.pca.scores, aes(PC1, PC2)) + 
+  # point layer 추가, 이중 point 로 그림 그리기
+  geom_point(aes(color=rownames(human.raw.pca.scores)), size = 4) +
+  geom_point(color="#FFFFFF", size = 1.5, show.legend = TRUE) +
+  # Point 오른쪽에 text 추가
+  geom_text_repel(aes(label=rownames(human.raw.pca.scores)), size =5, nudge_x= 25, show.legend = FALSE) +
+  # 배경을 하얀색으로, axis label size과 title size 조절
+  theme_bw() + theme(axis.text =element_text(size = rel(1.2))) +
+  theme(axis.title=element_text(size=rel(1.5))) +
+  # legend tilte없애고, box를 하얀색으로 안보이게, legend size조절.
+  theme(legend.title=element_blank(),legend.key = element_rect(color = "#FFFFFF"), legend.text = element_text(size = rel(1.2) ))
+
+```
+
+### human PCA and plotting. 이건 log치환후 음수는 그대로 둔것.
+```{r, echo=FALSE}
+
+human.raw.log.pca <- prcomp(human_raw_log.t, scale. =TRUE) # PCA 시행.
+summary(human.raw.log.pca)
+# screeplot(nipple.pca) PC들의 분산들에 대해 plot. 이것 보단 variance propotion이 나은듯.
+human.raw.log.pca.var = human.raw.log.pca$sdev ^ 2 # 주성분들의 분산 계산
+human.raw.log.pca.pve = human.raw.log.pca.var / sum(human.raw.log.pca.var) #주성분 분산의 propotion 계산
+plot (human.raw.log.pca.pve, xlab = "Principal Component", ylab = "Propotion of Variance Explained", ylim = c(0,0.4), type = "b")
+human.raw.log.pca.scores = data.frame(human.raw.log.pca$x) #PC들만 따로 뽑기.
+
+
+
+ggplot(human.raw.log.pca.scores, aes(PC1, PC2)) + 
+  # point layer 추가, 이중 point 로 그림 그리기
+  geom_point(aes(color=rownames(human.raw.log.pca.scores)), size = 4) +
+  geom_point(color="#FFFFFF", size = 1.5, show.legend = TRUE) +
+  # Point 오른쪽에 text 추가
+  geom_text_repel(aes(label=rownames(human.raw.log.pca.scores)), size =5, nudge_x= 25, show.legend = FALSE) +
+  # 배경을 하얀색으로, axis label size과 title size 조절
+  theme_bw() + theme(axis.text =element_text(size = rel(1.2))) +
+  theme(axis.title=element_text(size=rel(1.5))) +
+  # legend tilte없애고, box를 하얀색으로 안보이게, legend size조절.
+  theme(legend.title=element_blank(),legend.key = element_rect(color = "#FFFFFF"), legend.text = element_text(size = rel(1.2) ))
+
+```
+
+
+### mouse stromal cell. estrogen vs vehicle PCA and plotting. 이 data 는 log2값이며, 음수를 0으로 치환한것.
+
+```{r, echo=FALSE}
+
+mouse_est.pca <- prcomp(mouse_est_sub.t) # PCA 시행.
 summary(mouse_est.pca)
 # screeplot(nipple.pca) PC들의 분산들에 대해 plot. 이것 보단 variance propotion이 나은듯.
 mouse_est.pca.var = mouse_est.pca$sdev ^ 2 # 주성분들의 분산 계산
@@ -118,7 +236,7 @@ ggplot(mouse_est.pca.scores, aes(PC1, PC2)) +
   geom_point(aes(color=group_mouse), size = 4) +
   geom_point(color="#FFFFFF", size = 1.5, show.legend = TRUE) +
   # Point 오른쪽에 text 추가
-  geom_text(aes(label=rep, color= group_mouse), size =5, nudge_x= 25, show.legend = FALSE) +
+  geom_text(aes(label=rep, color= group_mouse), size =5, nudge_x= 7, show.legend = FALSE) +
   # 배경을 하얀색으로, axis label size과 title size 조절
   theme_bw() + theme(axis.text =element_text(size = rel(1.2))) +
   theme(axis.title=element_text(size=rel(1.5))) +
@@ -126,5 +244,34 @@ ggplot(mouse_est.pca.scores, aes(PC1, PC2)) +
   theme(legend.title=element_blank(),legend.key = element_rect(color = "#FFFFFF"), legend.text = element_text(size = rel(1.2) ))
 
 ```
+
+
+### mouse stromal cell. estrogen vs vehicle PCA and plotting. 이 data 는 log2값이며, 음수를 0으로 치환하지 않은것.
+```{r, echo=FALSE}
+mouse_raw.pca <- prcomp(mouse_raw_sub.t, scale. =TRUE) # PCA 시행.
+summary(mouse_raw.pca)
+# screeplot(nipple.pca) PC들의 분산들에 대해 plot. 이것 보단 variance propotion이 나은듯.
+mouse_raw.pca.var = mouse_raw.pca$sdev ^ 2 # 주성분들의 분산 계산
+mouse_raw.pca.pve = mouse_raw.pca.var / sum(mouse_raw.pca.var) #주성분 분산의 propotion 계산
+plot (mouse_raw.pca.pve, xlab = "Principal Component", ylab = "Propotion of Variance Explained", ylim = c(0,0.4), type = "b")
+mouse_raw.pca.scores = data.frame(mouse_raw.pca$x) #PC들만 따로 뽑기.
+
+group_mouse <- factor(c("Vehicle", "Vehicle", "Vehicle", "Estrogen","Estrogen","Estrogen")) # gene group naming
+mouse_raw.pca.scores <- cbind(mouse_raw.pca.scores, group_mouse, rep) # PC matrix에 data labeling
+
+ggplot(mouse_raw.pca.scores, aes(PC1, PC2)) + 
+  # point layer 추가, 이중 point 로 그림 그리기
+  geom_point(aes(color=group_mouse), size = 4) +
+  geom_point(color="#FFFFFF", size = 1.5, show.legend = TRUE) +
+  # Point 오른쪽에 text 추가
+  geom_text(aes(label=rep, color= group_mouse), size =5, nudge_x= 25, show.legend = FALSE) +
+  # 배경을 하얀색으로, axis label size과 title size 조절
+  theme_bw() + theme(axis.text =element_text(size = rel(1.2))) +
+  theme(axis.title=element_text(size=rel(1.5))) +
+  # legend tilte없애고, box를 하얀색으로 안보이게, legend size조절.
+  theme(legend.title=element_blank(),legend.key = element_rect(color = "#FFFFFF"), legend.text = element_text(size = rel(1.2) ))
+```
+
+
 
 
