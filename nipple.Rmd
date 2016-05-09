@@ -12,6 +12,7 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 require(ggplot2)
 require(ggrepel)
 require(affy)
+require(reshape2)
 krp_wt <- read.csv("nippleKrp_Wt.csv", header = TRUE)
 human <- read.csv("Human.csv", header = TRUE)
 mouse_est <- read.csv("mouse_estrogen.csv", header = TRUE)
@@ -62,11 +63,18 @@ colnames(mouse_raw_sub.t) <- mouse_raw_sub$gene.sym
 
 #composite flie subsetting. KrP vs WT과 Mouse estrogen file 을 동일한 유전자에 대해 통합
 colnames(composite) <- c("gene.sym", "gene.desc", "Str.vehicle.rep1", "Str.vehicle.rep2", "Str.vehicle.rep3","Str.estrogen.rep1","Str.estrogen.rep2","Str.esctrogen.rep3", "krp1", "krp2", "krp3", "wt1", "wt2","wt3")
-composite_sub<-as.matrix(compiste[3:14])
+composite_sub<-as.matrix(compiste[3:14]) #nomalization quantile robust적용위해서는 matrix type이어야함.
 composite.t <- data.frame(t(composite[3:14]))
 colnames(composite.t) <- composite$gene.sym
-composite.nqr<- normalize.quantiles.robust(composite_sub)
-composite.nqr.t <- data.frame(t(composite.nqr))
+composite.nqr<- normalize.quantiles.robust(composite_sub) #nomalization quantile robust적용
+colnames(composite.nqr) <- c("Str.vehicle.rep1", "Str.vehicle.rep2", "Str.vehicle.rep3","Str.estrogen.rep1","Str.estrogen.rep2","Str.esctrogen.rep3", "krp1", "krp2", "krp3", "wt1", "wt2","wt3")
+composite.nqr.t <- data.frame(t(composite.nqr)) ##nomalization quantile robust적용한것을 transpose
+colnames(composite.nqr.t) <- composite$gene.sym
+
+#normalization 된거 확인용.
+boxplot(composite_sub)
+boxplot(composite.nqr)
+
 # 이 아래쪽은 fold change가 큰 gene들, 즉 DEG에 대해서 subsetting 할때
 # krp_wt_sub.deg <- subset(krp_wt_sub, Fold_change > 1.5 | Fold_change <0.67)
 
@@ -281,7 +289,7 @@ ggplot(mouse_raw.pca.scores, aes(PC1, PC2)) +
   theme(legend.title=element_blank(),legend.key = element_rect(color = "#FFFFFF"), legend.text = element_text(size = rel(1.2) ))
 ```
 
-## Composite(KrP, mouse estrogen) PCA and plotting.
+## Composite(KrP, mouse estrogen) PCA and plotting. nomalization quantile robust적용.
 ```{r, echo=FALSE}
 composite.nqr.pca <- prcomp(composite.nqr.t, scale. =TRUE) # PCA 시행.
 summary(composite.nqr.pca)
