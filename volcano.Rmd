@@ -1,0 +1,50 @@
+---
+title: "volcano"
+author: "Hyunsu Lee"
+date: "May 16, 2016"
+output: html_document
+---
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+## Data load & summary
+```{r, echo=FALSE}
+require(ggplot2)
+require(ggrepel)
+require(affy)
+require(reshape2)
+
+krp_wt <- read.csv("Krp_Wt.csv", header = TRUE)
+```
+
+## Data subsetting
+```{r, echo=FALSE}
+krpwtsub <- krp_wt[2]
+krpwtsub <- cbind.data.frame(krpwtsub, krp_wt[12:13])
+colnames(krpwtsub) <- c("gene", "fold", "pvalue")
+
+krpwtsub$fold <- log2(krpwtsub$fold)
+krpwtsub$pvalue <- -log10(krpwtsub$pvalue)
+
+krpwtsub$color_flag <- ifelse(krpwtsub$fold > 2, "FF0000", ifelse(krpwtsub$fold < -2, "DC502C", ifelse(krpwtsub$fold > 1, "F2CB20", ifelse(krpwtsub$fold < -1, "24DC1F", ifelse(krpwtsub$fold > 0, "A0BE1E", "8DFF54")))))
+
+gene_tag <- subset(krpwtsub, pvalue >3)
+
+gene_tag <- subset(gene_tag, fold > 2 | fold < -2)
+
+# krpwtsub$gene_tag <- ""
+# krpwtsub$gene_tag <- ifelse(krpwtsub$pvalue < 3, "", ifelse(krpwtsub$fold < 2 & krpwtsub$fold > -2, "", as.character(krpwtsub$gene)))
+```
+
+## plotting
+```{r, echo=FALSE}
+ggplot(krpwtsub, aes(fold, pvalue)) +
+  geom_point(aes(colour = color_flag), size = I(1.5), alpha = 0.5, show.legend = FALSE) +
+  scale_color_manual(breaks = krpwtsub$color_flag, values = c("#24DC1F", "#8DFF54", "#A0BE1E","#F2CB20", "#DC502C", "#FF0A0C")) +
+  geom_text_repel(data = gene_tag, aes(fold, pvalue, label = gene), show.legend = FALSE, colour = "black") +
+  theme_classic()+theme_linedraw()+theme_light() +
+  labs(x = "Log2 fold change", y = "-Log10(p value)") 
+#+  geom_point(size = I(0.5), alpha = I(0.2),  color= "white", show.legend = FALSE)
+  
+
+```
