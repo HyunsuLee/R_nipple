@@ -11,7 +11,6 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 ```{r, echo=FALSE}
 require(ggplot2)
 require(ggrepel)
-require(affy)
 require(reshape2)
 
 krp_wt <- read.csv("Krp_Wt.csv", header = TRUE)
@@ -26,13 +25,15 @@ krpwtsub <- krp_wt[2]
 krpwtsub <- cbind.data.frame(krpwtsub, krp_wt[12:13])
 colnames(krpwtsub) <- c("gene", "fold", "pvalue")
 
+#krp wt raw data는 volcano plot을 위해 log 값 처리.
 krpwtsub$fold <- log2(krpwtsub$fold)
 krpwtsub$pvalue <- -log10(krpwtsub$pvalue)
 
+#fold change 2,1,0,-1,2를 기준으로 Factorization -> color grouping 
 krpwtsub$color_flag <- ifelse(krpwtsub$fold > 2, "a", ifelse(krpwtsub$fold < -2, "f", ifelse(krpwtsub$fold > 1, "b", ifelse(krpwtsub$fold < -1, "e", ifelse(krpwtsub$fold > 0, "c", "d")))))
 
+#유전자 이름을 tagging 하는 기준. 
 gene_tag <- subset(krpwtsub, pvalue >3)
-
 gene_tag <- subset(gene_tag, fold > 2 | fold < -2)
 
 #Human 
@@ -40,37 +41,45 @@ humansub <- human[2]
 humansub <- cbind.data.frame(humansub, human[19:20])
 colnames(humansub) <- c("gene", "fold", "pvalue")
 
+#human raw data는 fold change가 이미 log2 값임.
 humansub$pvalue <- -log10(humansub$pvalue)
 
+#color grouping
 humansub$color_flag <- ifelse(humansub$fold > 2, "a", ifelse(humansub$fold < -2, "f", ifelse(humansub$fold > 1, "b", ifelse(humansub$fold < -1, "e", ifelse(humansub$fold > 0, "c", "d")))))
 
+#gene name tagging 기준.(수정필요)
 gene_tag_hu <- subset(humansub, pvalue >3)
-
 gene_tag_hu <- subset(gene_tag_hu, fold > 2 | fold < -2)
 
-# krpwtsub$gene_tag <- ""
-# krpwtsub$gene_tag <- ifelse(krpwtsub$pvalue < 3, "", ifelse(krpwtsub$fold < 2 & krpwtsub$fold > -2, "", as.character(krpwtsub$gene)))
+
 ```
 
 ## plotting
 ```{r, echo=FALSE}
 #Krp vs WT plot
 ggplot(krpwtsub, aes(fold, pvalue)) +
+  # scatter plot.
   geom_point(aes(colour = color_flag), size = 1.5, alpha = 0.8, show.legend = FALSE) +
+  # color palette - book mark의 cook book을 볼것.
   scale_color_brewer(palette =  "RdYlGn") +
-  #scale_color_manual(breaks = krpwtsub$color_flag, values = c("#24DC1F", "#8DFF54", "#A0BE1E","#F2CB20", "#CC401C", "#FF0A0C")) +
+  # gene name tagging. 
   geom_text_repel(data = gene_tag, aes(fold, pvalue, label = gene), show.legend = FALSE, colour = "black") +
+  # 배경 하얗게.
   theme_classic()+theme_linedraw()+theme_light() +
+  # axis labels.
   labs(x = "Log2 fold change", y = "-Log10(p value)") 
-#+  geom_point(size = I(0.5), alpha = I(0.2),  color= "white", show.legend = FALSE)
+  #+ geom_point(size = I(0.5), alpha = I(0.2),  color= "white", show.legend = FALSE)
+  #+ scale_color_manual(breaks = krpwtsub$color_flag, values = c("#24DC1F", "#8DFF54", "#A0BE1E","#F2CB20", "#CC401C", "#FF0A0C")) +
   
 # human plot
 ggplot(humansub, aes(fold, pvalue)) +
+  # scatter plot
   geom_point(aes(colour = color_flag), size = 1.5, alpha = 0.8, show.legend = FALSE) +
+  # color palette 는 book mark의 R cook book.
   scale_color_brewer(palette =  "RdYlGn") +
-  #scale_color_manual(breaks = krpwtsub$color_flag, values = c("#24DC1F", "#8DFF54", "#A0BE1E","#F2CB20", "#CC401C", "#FF0A0C")) +
+  # gene name tagging. 
   geom_text_repel(data = gene_tag_hu, aes(fold, pvalue, label = gene), show.legend = FALSE, colour = "black") +
   theme_classic()+theme_linedraw()+theme_light() +
   labs(x = "Log2 fold change", y = "-Log10(p value)") 
-
+  #+ scale_color_manual(breaks = krpwtsub$color_flag, values = c("#24DC1F", "#8DFF54", "#A0BE1E","#F2CB20", "#CC401C", "#FF0A0C")) +
 ```

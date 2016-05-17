@@ -113,6 +113,8 @@ ggplot(krp_wt.pca.scores, aes(PC1, PC2)) +
   # legend tilte없애고, box를 하얀색으로 안보이게, legend size조절.
   theme(legend.title=element_blank(),legend.key = element_rect(color = "#FFFFFF"), legend.text = element_text(size = rel(1.2) ))
 
+ggsave("PCA_krp_wt.tiff", dpi = 300, units = c("in"), width = 7, height = 5)
+
 ggplot(krp_wt.pca.scores, aes(PC1, PC3)) + 
   # point layer 추가, 이중 point 로 그림 그리기
   geom_point(aes(color=group), size = 4) +
@@ -176,6 +178,8 @@ ggplot(human.pca.scores, aes(PC1, PC2)) +
   # legend tilte없애고, box를 하얀색으로 안보이게, legend size조절.
   theme(legend.title=element_blank(),legend.key = element_rect(color = "#FFFFFF"), legend.text = element_text(size = rel(1.2) ))
 
+ggsave("PCA_human_log_minus_to_zero.tiff", dpi = 300, units = c("in"), width = 7, height = 5)
+
 ```
 
 ### human PCA and plotting. 이건 log치환안한것.
@@ -203,6 +207,7 @@ ggplot(human.raw.pca.scores, aes(PC1, PC2)) +
   # legend tilte없애고, box를 하얀색으로 안보이게, legend size조절.
   theme(legend.title=element_blank(),legend.key = element_rect(color = "#FFFFFF"), legend.text = element_text(size = rel(1.2) ))
 
+ggsave("PCA_human_raw.tiff", dpi = 300, units = c("in"), width = 7, height = 5)
 ```
 
 ### human PCA and plotting. 이건 log치환후 음수는 그대로 둔것.
@@ -230,6 +235,7 @@ ggplot(human.raw.log.pca.scores, aes(PC1, PC2)) +
   # legend tilte없애고, box를 하얀색으로 안보이게, legend size조절.
   theme(legend.title=element_blank(),legend.key = element_rect(color = "#FFFFFF"), legend.text = element_text(size = rel(1.2) ))
 
+ggsave("PCA_human_log.tiff", dpi = 300, units = c("in"), width = 7, height = 5)
 ```
 
 
@@ -260,6 +266,7 @@ ggplot(mouse_est.pca.scores, aes(PC1, PC2)) +
   # legend tilte없애고, box를 하얀색으로 안보이게, legend size조절.
   theme(legend.title=element_blank(),legend.key = element_rect(color = "#FFFFFF"), legend.text = element_text(size = rel(1.2) ))
 
+ggsave("PCA_mouse_log_minus_to_zero.tiff", dpi = 300, units = c("in"), width = 7, height = 5)
 ```
 
 
@@ -287,6 +294,8 @@ ggplot(mouse_raw.pca.scores, aes(PC1, PC2)) +
   theme(axis.title=element_text(size=rel(1.5))) +
   # legend tilte없애고, box를 하얀색으로 안보이게, legend size조절.
   theme(legend.title=element_blank(),legend.key = element_rect(color = "#FFFFFF"), legend.text = element_text(size = rel(1.2) ))
+
+ggsave("PCA_mouse_log.tiff", dpi = 300, units = c("in"), width = 7, height = 5)
 ```
 
 ## Composite(KrP, mouse estrogen) PCA and plotting. nomalization quantile robust적용.
@@ -316,6 +325,7 @@ ggplot(composite.nqr.pca.scores, aes(PC1, PC2)) +
   # legend tilte없애고, box를 하얀색으로 안보이게, legend size조절.
   theme(legend.title=element_blank(),legend.key = element_rect(color = "#FFFFFF"), legend.text = element_text(size = rel(1.2) ))
 
+ggsave("PCA_composite_nqr.tiff", dpi = 300, units = c("in"), width = 7, height = 5)
 ```
 
 
