@@ -14,8 +14,8 @@ require(ggrepel)
 require(reshape2)
 
 krp_wt <- read.csv("Krp_Wt.csv", header = TRUE)
-human <- read.csv("human.csv", header = TRUE)
-
+# human <- read.csv("human.csv", header = TRUE)
+mouse <- read.csv("mouse.csv", header = TRUE)
 ```
 
 ## Data subsetting
@@ -36,6 +36,7 @@ krpwtsub$color_flag <- ifelse(krpwtsub$fold > 2, "a", ifelse(krpwtsub$fold < -2,
 gene_tag <- subset(krpwtsub, pvalue >3)
 gene_tag <- subset(gene_tag, fold > 2 | fold < -2)
 
+'''
 #Human 
 humansub <- human[2]
 humansub <- cbind.data.frame(humansub, human[19:20])
@@ -50,8 +51,23 @@ humansub$color_flag <- ifelse(humansub$fold > 2, "a", ifelse(humansub$fold < -2,
 #gene name tagging 기준.(수정필요)
 gene_tag_hu <- subset(humansub, pvalue >3)
 gene_tag_hu <- subset(gene_tag_hu, fold > 2 | fold < -2)
+'''
 
+#mouse
 
+mousesub <- mouse[2]
+mousesub <- cbind.data.frame(mousesub, mouse[12:13])
+colnames(mousesub) <- c("gene", "fold", "pvalue")
+
+#volcano plot을 위해 log 값 처리.(fold는 이미 Log)
+mousesub$pvalue <- -log10(mousesub$pvalue)
+
+#fold change 2,1,0,-1,2를 기준으로 Factorization -> color grouping 
+mousesub$color_flag <- ifelse(mousesub$fold > 2, "a", ifelse(mousesub$fold < -2, "f", ifelse(mousesub$fold > 1, "b", ifelse(mousesub$fold < -1, "e", ifelse(mousesub$fold > 0, "c", "d")))))
+
+#유전자 이름을 tagging 하는 기준. 
+gene_tag_mo <- subset(mousesub, pvalue > 3.5)
+gene_tag_mo <- subset(gene_tag_mo, fold > 2 | fold < -2)
 ```
 
 ## plotting
@@ -71,8 +87,9 @@ ggplot(krpwtsub, aes(fold, pvalue)) +
   #+ geom_point(size = I(0.5), alpha = I(0.2),  color= "white", show.legend = FALSE)
   #+ scale_color_manual(breaks = krpwtsub$color_flag, values = c("#24DC1F", "#8DFF54", "#A0BE1E","#F2CB20", "#CC401C", "#FF0A0C")) +
   
-ggsave("volcano_krp.tiff", dpi = 300, units = c("in"), width = 7, height = 5)
+ggsave("volcano_krp_nolabel.tiff", dpi = 300, units = c("in"), width = 7, height = 5)
 
+'''
 # human plot
 ggplot(humansub, aes(fold, pvalue)) +
   # scatter plot
@@ -84,4 +101,22 @@ ggplot(humansub, aes(fold, pvalue)) +
   theme_classic()+theme_linedraw()+theme_light() +
   labs(x = "Log2 fold change", y = "-Log10(p value)") 
   #+ scale_color_manual(breaks = krpwtsub$color_flag, values = c("#24DC1F", "#8DFF54", "#A0BE1E","#F2CB20", "#CC401C", "#FF0A0C")) +
+'''
+
+#mouse plot
+ggplot(mousesub, aes(fold, pvalue)) +
+  # scatter plot.
+  geom_point(aes(colour = color_flag), size = 0.8, alpha = 0.7, show.legend = FALSE) +
+  # color palette - book mark의 cook book을 볼것.
+  scale_color_brewer(palette =  "RdYlGn") +
+  # gene name tagging. 
+  geom_text_repel(data = gene_tag_mo, aes(fold, pvalue, label = gene), show.legend = FALSE, colour = "black") +
+  # 배경 하얗게.
+  theme_classic()+theme_linedraw()+theme_light() +
+  # axis labels.
+  labs(x = "Log2 fold change", y = "-Log10(p value)") 
+  #+ geom_point(size = I(0.5), alpha = I(0.2),  color= "white", show.legend = FALSE)
+  #+ scale_color_manual(breaks = krpwtsub$color_flag, values = c("#24DC1F", "#8DFF54", "#A0BE1E","#F2CB20", "#CC401C", "#FF0A0C")) +
+
+ggsave("volcano_mouse_nolabel.tiff", dpi = 300, units = c("in"), width = 7, height = 5)
 ```
