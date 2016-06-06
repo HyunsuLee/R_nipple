@@ -119,4 +119,27 @@ ggplot(mousesub, aes(fold, pvalue)) +
   #+ scale_color_manual(breaks = krpwtsub$color_flag, values = c("#24DC1F", "#8DFF54", "#A0BE1E","#F2CB20", "#CC401C", "#FF0A0C")) +
 
 ggsave("volcano_mouse_nolabel.tiff", dpi = 300, units = c("in"), width = 7, height = 5)
+
+
+#t.test function
+
+ttest_p <- function(df) {
+  n <- length(df[,1])         # data의 row number 받기
+  p_value <- numeric(n)       # p_value를 받을 vector 생성
+  for (i in 1:n) {
+    if (sum(df[i, 4:6]) > sum(df[i, 7:9])){         #t.test를 할 세트를 비교, 여기선 4,5,6 column vs 7,8,9 column. one-tailed t.test를 위해 먼저 크기 비교.
+      ttest <- t.test(df[i,4:6], df[i,7:9], alternative = "greater", var.equal = TRUE)
+      p_value[i] <- ttest$p.value #t.test p value를 생성해놓은 vector에 넘김.
+    } else {
+      ttest <- t.test(df[i,4:6], df[i,7:9], alternative = "less", var.equal = TRUE)
+      p_value[i] <- ttest$p.value
+    }
+  } 
+  return(p_value)  #function에 p value를 return.
+   
+}
+
+mouse <-cbind(mouse, ttest_p(mouse)) # t_test를 하고 싶은 data set에 p.value값 넣어주기.
+
+
 ```
