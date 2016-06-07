@@ -1,0 +1,32 @@
+---
+title: "Heatmap"
+author: "Hyunsu Lee"
+date: "June 7, 2016"
+output: html_document
+---
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+## Data load & summary
+```{r, echo=FALSE}
+require(ggplot2)
+require(reshape2)
+
+heat <- read.csv("Heatmap.csv", header = TRUE)
+```
+
+## Data subgroup & melt.
+```{r, echo=FALSE}
+heatsub <- heat[1:2]
+heatsub <- cbind.data.frame(heatsub, heat[21:26])
+
+heatsub.m <- melt(heatsub)
+```
+
+
+## Plot heat map
+```{r, echo=FALSE}
+ggplot(heatsub.m, aes(variable, Gene.name)) + geom_tile(aes(fill = value)) + scale_fill_gradient2 (high = "#FF0000", low = "#0000FF", mid = "white")
+
+```
+
