@@ -11,7 +11,7 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 ```{r, echo=FALSE}
 require(ggplot2)
 require(ggrepel)
-#require(affy)
+require(affy)
 require(reshape2)
 krp_wt <- read.csv("nippleKrp_Wt.csv", header = TRUE)
 human <- read.csv("Human.csv", header = TRUE)
