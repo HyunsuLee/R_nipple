@@ -1,0 +1,112 @@
+---
+title: "Heatmap2"
+author: "Hyunsu Lee"
+date: "June 27, 2016"
+output: html_document
+---
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+## Data load & summary
+```{r, echo=FALSE}
+require(ggplot2)
+require(reshape2)
+#require(pheatmap)
+require(grid)
+require(gridExtra)
+require(Cairo)
+
+heat <- read.csv("For heatmap.csv", header = TRUE)
+```
+
+## Data subsetting 
+```{r, echo=FALSE}
+heatsub <- heat
+levels(heatsub$Signalling) <- c(2,1,3)
+colnames(heatsub) <- c("Gene.name", "Signalling", "DCT1", "DCT2", "DCT3", "ERST2", "ERST3", "LC1", "LC2", "LC3")
+
+'''
+heatsub_1 <- subset(heatsub, Signalling==1) #signaling pathway별로 따로 그린다음 grid형태로 그리기위한 작업, faceting은 안된다. 
+heatsub_2 <- subset(heatsub, Signalling==2)
+heatsub_3 <- subset(heatsub, Signalling==3)
+
+heatsub.m_1 <- melt(heatsub_1)
+heatsub.m_2 <- melt(heatsub_2)
+heatsub.m_3 <- melt(heatsub_3)
+'''
+Gene.order <- as.factor(c(2639:1))
+heatsub <- cbind.data.frame(heatsub, Gene.order)
+
+
+heatsub.m <- melt(heatsub)
+
+
+heatsub.log <- log10(heatsub.m$value)
+heatsub.log = (heatsub.log - mean(heatsub.log))/sd(heatsub.log)
+
+heatsub.m <- cbind(heatsub.m, heatsub.log)
+
+heatsub.m_1 <- subset(heatsub.m, Signalling==1)
+heatsub.m_2 <- subset(heatsub.m, Signalling==2)
+heatsub.m_3 <- subset(heatsub.m, Signalling==3)
+
+
+```
+
+
+## Plot heat map
+```{r, echo=FALSE}
+
+ggplot(heatsub.m, aes(Gene.name, heatsub.log)) + geom_point()
+
+
+
+
+ggplot(heatsub.m, aes(variable, Gene.order)) +
+  #heatmap은 tile형태로 그림. 
+  geom_tile(aes(fill = heatsub.log)) + 
+  #heatmap용 gradient 먹이기.
+  scale_fill_gradient2 (low = "#D22D23", mid = "#F9F2B9", high = "#295224") +
+  #gene.order 숫자로 그린다음에 다시 gene name을 넣어줌.
+  scale_y_discrete(breaks =NULL) +
+  #x축 labeling없애기, legend 다 없애기.
+  scale_x_discrete(breaks=NULL) + labs(x ="", y="") + theme(legend.position="none")
+
+ggsave("heatmap_total.tiff", units = "in", width = 3, height = 12, dpi =300)
+
+p1 <- ggplot(heatsub.m_1, aes(variable, Gene.name)) + 
+  #heatmap은 tile형태로 그림. 
+  geom_tile(aes(fill = heatsub.log)) + 
+  #heatmap용 gradient 먹이기.
+  scale_fill_gradient2 (low = "#D22D23", mid = "#F9F2B9", high = "#295224") +
+  #gene.order 숫자로 그린다음에 다시 gene name을 넣어줌.
+  scale_y_discrete(breaks =NULL) +
+  #x축 labeling없애기, legend 다 없애기.
+  scale_x_discrete(breaks=NULL) + labs(x ="", y="") + theme(legend.position="none")
+
+p2 <- ggplot(heatsub.m_2, aes(variable, Gene.name)) + 
+  #heatmap은 tile형태로 그림. 
+  geom_tile(aes(fill = heatsub.log)) + 
+  #heatmap용 gradient 먹이기.
+  scale_fill_gradient2 (low = "#D22D23", mid = "#F9F2B9", high = "#295224") +
+  #gene.order 숫자로 그린다음에 다시 gene name을 넣어줌.
+  scale_y_discrete(breaks =NULL) +
+  #x축 labeling없애기, legend 다 없애기.
+  scale_x_discrete(breaks=NULL) + labs(x ="", y="") + theme(legend.position="none")
+
+p3 <- ggplot(heatsub.m_3, aes(variable, Gene.name)) + 
+  #heatmap은 tile형태로 그림. 
+  geom_tile(aes(fill = heatsub.log)) + 
+  #heatmap용 gradient 먹이기.
+  scale_fill_gradient2 (low = "#D22D23", mid = "#F9F2B9", high = "#295224") +
+  #gene.order 숫자로 그린다음에 다시 gene name을 넣어줌.
+  scale_y_discrete(breaks =NULL) +
+  #x축 labeling없애기, legend 다 없애기.
+  scale_x_discrete(breaks=NULL) + labs(x ="", y="") + theme(legend.position="none")
+
+pg <- grid.arrange(p1,p2,p3, ncol=1, heights = c(2, 1, 1))
+
+ggsave("heatmap.tiff", plot = pg, units = "in", width = 3, height = 12, dpi =300)
+
+
+```
