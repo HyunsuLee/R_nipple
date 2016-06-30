@@ -11,19 +11,28 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 ```{r, echo=FALSE}
 require(ggplot2)
 require(reshape2)
-#require(pheatmap)
 require(grid)
 require(gridExtra)
 require(Cairo)
+require(gplots)
+require(affy)
+require(preprocessCore)
+require(RColorBrewer)
 
 heat <- read.csv("For heatmap.csv", header = TRUE)
+heat_r <- read.csv("For heatmap_re.csv", header = TRUE)
 ```
 
 ## Data subsetting 
 ```{r, echo=FALSE}
 heatsub <- heat
-levels(heatsub$Signalling) <- c(2,1,3)
+heatsub_r <- heat_r[1:10]
+
 colnames(heatsub) <- c("Gene.name", "Signalling", "DCT1", "DCT2", "DCT3", "ERST2", "ERST3", "LC1", "LC2", "LC3")
+levels(heatsub$Signalling) <- c(2,1,3)
+
+colnames(heatsub_r) <- c("Gene.name", "Signalling", "DCT1", "DCT2", "DCT3", "ERST2", "ERST3", "LC1", "LC2", "LC3")
+levels(heatsub_r$Signalling) <- c(2,1,3)
 
 '''
 heatsub_1 <- subset(heatsub, Signalling==1) #signaling pathway별로 따로 그린다음 grid형태로 그리기위한 작업, faceting은 안된다. 
@@ -33,32 +42,99 @@ heatsub_3 <- subset(heatsub, Signalling==3)
 heatsub.m_1 <- melt(heatsub_1)
 heatsub.m_2 <- melt(heatsub_2)
 heatsub.m_3 <- melt(heatsub_3)
-'''
+
 Gene.order <- as.factor(c(2639:1))
 heatsub <- cbind.data.frame(heatsub, Gene.order)
+heatsub_r <- cbind.data.frame(heatsub_r, Gene.order)
+
 
 
 heatsub.m <- melt(heatsub)
 
 
 heatsub.log <- log10(heatsub.m$value)
-heatsub.log = (heatsub.log - mean(heatsub.log))/sd(heatsub.log)
+
 
 heatsub.m <- cbind(heatsub.m, heatsub.log)
 
 heatsub.m_1 <- subset(heatsub.m, Signalling==1)
 heatsub.m_2 <- subset(heatsub.m, Signalling==2)
 heatsub.m_3 <- subset(heatsub.m, Signalling==3)
-
+'''
 
 ```
 
+## heatmap package
+```{r, echo=FALSE}
+heatnum <- as.matrix(heatsub[3:10])
+heatnum_r <-as.matrix(heatsub_r[3:10])
+row.names(heatnum) <- heatsub$Gene.name
+row.names(heatnum_r) <- heatsub_r$Gene.name
+
+heatnum = heatnum + 1
+heatnum_r = heatnum_r + 1
+
+
+heatnum.log <- log2(heatnum)
+heatnum_r.log <- log2(heatnum_r)
+
+heatnum.log.z <- (heatnum.log - mean(heatnum.log))/sd(heatnum.log)
+heatnum_r.log.z <- (heatnum_r.log - mean(heatnum_r.log))/sd(heatnum_r.log)
+
+heatnum.log.nq <- normalize.quantiles(heatnum.log)
+colnames(heatnum.log.nq) <- colnames(heatnum.log)
+rownames(heatnum.log.nq) <- rownames(heatnum.log)
+
+'''
+heatnum.log.z.df <- as.data.frame(heatnum.log.z)
+heatnum_r.log.z.df <- as.data.frame(heatnum_r.log.z)
+heatnum_r.log.z.df <- cbind(heatnum_r.log.z.df, Gene.order)
+
+Gene.name <- rownames(heatnum_r.log.z.df)
+
+heatnum_r.log.z.df <- cbind(heatnum_r.log.z.df, Gene.name)
+heatnum_r.log.z.m <- melt(heatnum_r.log.z.df)
+
+'''
+
+heatmap(heatnum.log.z, Colv = NA, cexCol = 0.7)
+heatmap.2(heatnum.log.nq, col=r, scale = "row", cexCol = 0.7, labRow = NA, key = F, trace = "none", density.info = "none", dendrogram = "row", Colv = NA)
+
+
+
+# hierachial
+hclust <- hclust(dist(heatnum.log.nq))
+clusterCut <- cutree(hclust, 3)
+
+heatnum.log.nq.clu <- cbind(heatnum.log.nq, clusterCut)
+
+Gene.name <- rownames(heatnum.log.nq.clu)
+heatnum.log.nq.clu <- cbind(heatnum.log.nq.clu, Gene.name)
+as.data.frame(heatnum.log.nq.clu)
+
+heatnum.log.nq.clu.m <- melt(as.data.frame(heatnum.log.nq.clu))
+
+#k means.
+kclust <- kmeans(heatnum.log.nq, 3)
+heatnum.log.nq.kclu <- cbind.data.frame(heatnum.log.nq, as.factor(kclust$cluster))
+```
 
 ## Plot heat map
 ```{r, echo=FALSE}
 
-ggplot(heatsub.m, aes(Gene.name, heatsub.log)) + geom_point()
+ggplot(heatsub.m, aes(Gene.name, value)) + geom_point()
 
+
+
+ggplot(heatnum.log.nq.clu.m, aes(variable, Gene.order)) +
+  #heatmap은 tile형태로 그림. 
+  geom_tile(aes(fill = value)) + 
+  #heatmap용 gradient 먹이기.
+  scale_fill_gradient2 (low = "#D22D23", mid = "#F9F2B9", high = "#295224") +
+  #gene.order 숫자로 그린다음에 다시 gene name을 넣어줌.
+  scale_y_discrete(breaks =NULL) +
+  #x축 labeling없애기, legend 다 없애기.
+  scale_x_discrete(breaks=NULL) + labs(x ="", y="") + theme(legend.position="none")
 
 
 
