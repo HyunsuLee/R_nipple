@@ -103,7 +103,8 @@ heatmap.2(heat.mat.log.nq, col=r, scale = "row", cexCol = 0.7, labRow = NA, key 
 
 #p value clustering
 library(pvclust)
-pclust <- pvclust(t(heat.mat.log.nq), method.hclust = "ward.D2", method.dist = "euclidean")
+heat.mat.log.nq_t <- t(heat.mat.log.nq)
+pclust <- pvclust(heat.mat.log.nq_t, method.hclust = "ward.D2", method.dist = "euclidean")
 
 
 
