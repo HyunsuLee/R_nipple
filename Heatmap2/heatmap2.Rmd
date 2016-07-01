@@ -15,7 +15,7 @@ require(grid)
 require(gridExtra)
 require(Cairo)
 require(gplots)
-require(affy)
+#require(affy)
 require(preprocessCore)
 require(RColorBrewer)
 
@@ -95,17 +95,19 @@ heatmap.2(heat.mat.log.nq, col=r, scale = "row", cexCol = 0.7, labRow = NA, key 
 # correlation clustering
 cor_t <-cor(t(heat.mat.log.nq))
 cor_t.dist <-dist(heat.mat.log.nq)
-cor_hclu_avg <-hclust(cor_t.dist, method = "ward.D2")
+cor_hclu_com <-hclust(cor_t.dist, method = "average")
 clusterCut <- cutree(cor_hclu_avg, 3)
-cor_dend <- as.dendrogram(clusterCut)
-heatmap.2(heat.mat.log.nq, col=r, scale = "row", cexCol = 0.7, labRow = NA, key = T, trace = "none", density.info = "none", dendrogram = "row", Colv = NA, Rowv=clusterCut)
+cor_dend <- as.dendrogram(cor_hclu_com)
+heatmap.2(heat.mat.log.nq, col=r, scale = "row", cexCol = 0.7, labRow = NA, key = T, trace = "none", density.info = "none", dendrogram = "row", Colv = NA, Rowv=cor_dend)
 
 
 #p value clustering
 library(pvclust)
 heat.mat.log.nq_t <- t(heat.mat.log.nq)
 pclust <- pvclust(heat.mat.log.nq_t, method.hclust = "ward.D2", method.dist = "euclidean")
+pclu_dend <- as.dendrogram(pclust)
 
+heatmap.2(heat.mat.log.nq, col=r, scale = "row", cexCol = 0.7, labRow = NA, key = T, trace = "none", density.info = "none", dendrogram = "row", Colv = NA, Rowv=pclu_dend)
 
 
 '''
