@@ -6,3 +6,15 @@
 .zip
 .Rroj
 .csv
+*.csv
+Human.zip
+PCA.zip
+PCA_23May16.zip
+PCA_composite_nqr.tiff
+PCA_human_log.tiff
+PCA_human_log_minus_to_zero.tiff
+PCA_human_raw.tiff
+PCA_krp_wt.tiff
+PCA_mouse_log.tiff
+PCA_mouse_log_minus_to_zero.tiff
+.csv
