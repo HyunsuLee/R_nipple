@@ -6,7 +6,6 @@
 .zip
 .Rroj
 .csv
-
 Human.zip
 PCA.zip
 PCA_23May16.zip
@@ -18,3 +17,4 @@ PCA_krp_wt.tiff
 PCA_mouse_log.tiff
 PCA_mouse_log_minus_to_zero.tiff
 .csv
+.ipynb_checkpoints
