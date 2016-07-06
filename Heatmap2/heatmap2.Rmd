@@ -95,16 +95,33 @@ heatmap.2(heat.mat.log.nq, col=r, scale = "row", cexCol = 0.7, labRow = NA, key 
 # correlation clustering
 cor_t <-cor(t(heat.mat.log.nq))
 cor_t.dist <-dist(heat.mat.log.nq)
-cor_hclu_com <-hclust(cor_t.dist, method = "average")
-clusterCut <- cutree(cor_hclu_avg, 3)
-cor_dend <- as.dendrogram(cor_hclu_com)
-heatmap.2(heat.mat.log.nq, col=r, scale = "row", cexCol = 0.7, labRow = NA, key = T, trace = "none", density.info = "none", dendrogram = "row", Colv = NA, Rowv=cor_dend)
+cor_hclu_avg <-hclust(cor_t.dist, method = "average")
+cor_hclu_com <-hclust(cor_t.dist, method = "complete")
+cor_hclu_ward <-hclust(cor_t.dist, method = "ward.D2")
+
+
+#clusterCut <- cutree(cor_hclu_avg, 3)
+cor_dend_com <- as.dendrogram(cor_hclu_com)
+cor_dend_avg <- as.dendrogram(cor_hclu_avg)
+cor_dend_ward <- as.dendrogram(cor_hclu_ward)
+
+heatmap.2(heat.mat.log.nq, col=r, scale = "row", cexCol = 1, labRow = NA, key = FALSE, trace = "none", density.info = "none", dendrogram = "row", Colv = NA, Rowv=cor_dend_com)
+
+tiff(filename = "heatmap_com.tiff", width = 5, height = 7, units = "in", res=300)
+
+heatmap.2(heat.mat.log.nq, col=r, scale = "row", cexCol = 1, labRow = NA, key = FALSE, trace = "none", density.info = "none", dendrogram = "row", Colv = NA, Rowv=cor_dend_avg)
+
+tiff(filename = "heatmap_avg.tiff", width = 5, height = 7, units = "in", res=300)
+
+heatmap.2(heat.mat.log.nq, col=r, scale = "row", cexCol = 1, labRow = NA, key = FALSE, trace = "none", density.info = "none", dendrogram = "row", Colv = NA, Rowv=cor_dend_ward)
+
+tiff(filename = "heatmap_ward.tiff", width = 5, height = 7, units = "in", res=300)
 
 
 #p value clustering
 library(pvclust)
 heat.mat.log.nq_t <- t(heat.mat.log.nq)
-pclust <- pvclust(heat.mat.log.nq_t, method.hclust = "ward.D2", method.dist = "euclidean")
+pclust <- pvclust(heat.mat.log.nq_t, method.hclust = "ward.D2", method.dist = "euclidean") #시간이 너무 오래걸림.
 pclu_dend <- as.dendrogram(pclust)
 
 heatmap.2(heat.mat.log.nq, col=r, scale = "row", cexCol = 0.7, labRow = NA, key = T, trace = "none", density.info = "none", dendrogram = "row", Colv = NA, Rowv=pclu_dend)
