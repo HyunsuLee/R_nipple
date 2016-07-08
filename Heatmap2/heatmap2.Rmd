@@ -89,7 +89,11 @@ heatnum_r.log.z.m <- melt(heatnum_r.log.z.df)
 heatmap(heat.mat.log.nq, Colv = NA, cexCol = 0.7)
 
 # RG <- c("#D22D23", "#F9F2B9", "#295224") #color manual하게 하고 싶을때, 하지만 discrete하게 색이 들어감(이 경우 삼색밖에 표현이 안됨)
-r <- brewer.pal(11, "RdYlGn")
+# r <- brewer.pal(11, "RdYlGn")
+r <- colorRampPalette(c("firebrick2", "lightgoldenrodyellow", "green"))(n = 299)
+
+
+
 heatmap.2(heat.mat.log.nq, col=r, scale = "row", cexCol = 0.7, labRow = NA, key = T, trace = "none", density.info = "none", dendrogram = "row", Colv = NA)
 
 # correlation clustering
@@ -107,11 +111,11 @@ cor_dend_ward <- as.dendrogram(cor_hclu_ward)
 
 heatmap.2(heat.mat.log.nq, col=r, scale = "row", cexCol = 1, labRow = NA, key = FALSE, trace = "none", density.info = "none", dendrogram = "row", Colv = NA, Rowv=cor_dend_com)
 
-tiff(filename = "heatmap_com.tiff", width = 5, height = 7, units = "in", res=300)
+#tiff(filename = "heatmap_com.tiff", width = 5, height = 7, units = "in", res=300)
 
 heatmap.2(heat.mat.log.nq, col=r, scale = "row", cexCol = 1, labRow = NA, key = FALSE, trace = "none", density.info = "none", dendrogram = "row", Colv = NA, Rowv=cor_dend_avg)
 
-tiff(filename = "heatmap_avg.tiff", width = 5, height = 7, units = "in", res=300)
+#tiff(filename = "heatmap_avg.tiff", width = 5, height = 7, units = "in", res=300)
 
 heatmap.2(heat.mat.log.nq, col=r, scale = "row", cexCol = 1, labRow = NA, key = FALSE, trace = "none", density.info = "none", dendrogram = "row", Colv = NA, Rowv=cor_dend_ward)
 
@@ -152,14 +156,15 @@ heat_clu_L <- rbind(heat_clu_1, heat_clu_2, heat_clu_3, heat_clu_4, heat_clu_5, 
 heat_clu_E <- rbind(heat_clu_9, heat_clu_12.2, heat_clu_13, heat_clu_15, heat_clu_16, heat_clu_10)
 heat_clu_D <- rbind(heat_clu_7, heat_clu_8, heat_clu_12.1, heat_clu_14, heat_clu_11)
 
-heatmap.2(heat_clu_L, col=r, scale = "row", cexCol = 1, labRow = rownames(heat_clu_L), key = FALSE, trace = "none", density.info = "none", dendrogram = "none", Colv = NA)
 tiff(filename = "heat_LC.tif", width = 5, height = 7, units = "in", res=300)
+heatmap.2(heat_clu_L, col=r, scale = "row", cexCol = 1, labRow = rownames(heat_clu_L), key = FALSE, trace = "none", density.info = "none", dendrogram = "none", Colv = NA)
 
-heatmap.2(heat_clu_E, col=r, scale = "row", cexCol = 1, labRow = rownames(heat_clu_E), key = FALSE, trace = "none", density.info = "none", dendrogram = "none", Colv = NA)
+
 tiff(filename = "heat_ER.tiff", width = 5, height = 7, units = "in", res=300)
+heatmap.2(heat_clu_E, col=r, scale = "row", cexCol = 1, labRow = rownames(heat_clu_E), key = FALSE, trace = "none", density.info = "none", dendrogram = "none", Colv = NA)
 
-heatmap.2(heat_clu_D, col=r, scale = "row", cexCol = 1, labRow = rownames(heat_clu_D), key = FALSE, trace = "none", density.info = "none", dendrogram = "none", Colv = NA)
 tiff(filename = "heat_DC.tif", width = 5, height = 7, units = "in", res=300)
+heatmap.2(heat_clu_D, col=r, scale = "row", cexCol = 1, labRow = rownames(heat_clu_D), key = FALSE, trace = "none", density.info = "none", dendrogram = "none", Colv = NA)
 
 write.csv(heat_clu_D, file = "heat_clu_D.csv")
 write.csv(heat_clu_L, file = "heat_clu_L.csv")
