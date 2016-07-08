@@ -88,7 +88,7 @@ heatnum_r.log.z.m <- melt(heatnum_r.log.z.df)
 
 heatmap(heat.mat.log.nq, Colv = NA, cexCol = 0.7)
 
-RG <- c("#D22D23", "#F9F2B9", "#295224") #color manual하게 하고 싶을때, 하지만 discrete하게 색이 들어감(이 경우 삼색밖에 표현이 안됨)
+# RG <- c("#D22D23", "#F9F2B9", "#295224") #color manual하게 하고 싶을때, 하지만 discrete하게 색이 들어감(이 경우 삼색밖에 표현이 안됨)
 r <- brewer.pal(11, "RdYlGn")
 heatmap.2(heat.mat.log.nq, col=r, scale = "row", cexCol = 0.7, labRow = NA, key = T, trace = "none", density.info = "none", dendrogram = "row", Colv = NA)
 
@@ -115,8 +115,51 @@ tiff(filename = "heatmap_avg.tiff", width = 5, height = 7, units = "in", res=300
 
 heatmap.2(heat.mat.log.nq, col=r, scale = "row", cexCol = 1, labRow = NA, key = FALSE, trace = "none", density.info = "none", dendrogram = "row", Colv = NA, Rowv=cor_dend_ward)
 
-tiff(filename = "heatmap_ward.tiff", width = 5, height = 7, units = "in", res=300)
+clustercut_ward <- as.factor(cutree(cor_hclu_ward, 16))
 
+heat_clu <- cbind(heat.mat.log.nq, clustercut_ward)
+
+heat_clu_1 <- subset(heat_clu, select = c("DCT1", "DCT2", "DCT3", "ERST2", "ERST3", "LC1", "LC2", "LC3"), clustercut_ward == 1)
+heat_clu_2 <- subset(heat_clu, select = c("DCT1", "DCT2", "DCT3", "ERST2", "ERST3", "LC1", "LC2", "LC3"), clustercut_ward == 2)
+heat_clu_3 <- subset(heat_clu, select = c("DCT1", "DCT2", "DCT3", "ERST2", "ERST3", "LC1", "LC2", "LC3"), clustercut_ward == 3)
+heat_clu_4 <- subset(heat_clu, select = c("DCT1", "DCT2", "DCT3", "ERST2", "ERST3", "LC1", "LC2", "LC3"), clustercut_ward == 4)
+heat_clu_5 <- subset(heat_clu, select = c("DCT1", "DCT2", "DCT3", "ERST2", "ERST3", "LC1", "LC2", "LC3"), clustercut_ward == 5)
+heat_clu_6 <- subset(heat_clu, select = c("DCT1", "DCT2", "DCT3", "ERST2", "ERST3", "LC1", "LC2", "LC3"), clustercut_ward == 6)
+heat_clu_7 <- subset(heat_clu, select = c("DCT1", "DCT2", "DCT3", "ERST2", "ERST3", "LC1", "LC2", "LC3"), clustercut_ward == 7)
+heat_clu_8 <- subset(heat_clu, select = c("DCT1", "DCT2", "DCT3", "ERST2", "ERST3", "LC1", "LC2", "LC3"), clustercut_ward == 8)
+heat_clu_9 <- subset(heat_clu, select = c("DCT1", "DCT2", "DCT3", "ERST2", "ERST3", "LC1", "LC2", "LC3"), clustercut_ward == 9)
+heat_clu_10 <- subset(heat_clu, select = c("DCT1", "DCT2", "DCT3", "ERST2", "ERST3", "LC1", "LC2", "LC3"), clustercut_ward == 10)
+heat_clu_11 <- subset(heat_clu, select = c("DCT1", "DCT2", "DCT3", "ERST2", "ERST3", "LC1", "LC2", "LC3"), clustercut_ward == 11)
+heat_clu_12 <- subset(heat_clu, select = c("DCT1", "DCT2", "DCT3", "ERST2", "ERST3", "LC1", "LC2", "LC3"), clustercut_ward == 12)
+heat_clu_13 <- subset(heat_clu, select = c("DCT1", "DCT2", "DCT3", "ERST2", "ERST3", "LC1", "LC2", "LC3"), clustercut_ward == 13)
+heat_clu_14 <- subset(heat_clu, select = c("DCT1", "DCT2", "DCT3", "ERST2", "ERST3", "LC1", "LC2", "LC3"), clustercut_ward == 14)
+heat_clu_15 <- subset(heat_clu, select = c("DCT1", "DCT2", "DCT3", "ERST2", "ERST3", "LC1", "LC2", "LC3"), clustercut_ward == 15)
+heat_clu_16 <- subset(heat_clu, select = c("DCT1", "DCT2", "DCT3", "ERST2", "ERST3", "LC1", "LC2", "LC3"), clustercut_ward == 16)
+
+
+# cluster 12번이 두가지 그룹이 있어 보여 다시 clustering해줌
+heat_clu_12_dist <- dist(heat_clu_12)
+cor_12_hclu_ward <-hclust(heat_clu_12_dist, method = "ward.D2")
+cor_12_hclu_dend <- as.dendrogram(cor_12_hclu_ward)
+clustercut_12_ward <- as.factor(cutree(cor_12_hclu_ward, 2))
+heat_12_clu <- cbind(heat_clu_12, clustercut_12_ward)
+heat_clu_12.1 <- subset(heat_12_clu, select = c("DCT1", "DCT2", "DCT3", "ERST2", "ERST3", "LC1", "LC2", "LC3"), clustercut_12_ward == 1)
+heat_clu_12.2 <- subset(heat_12_clu, select = c("DCT1", "DCT2", "DCT3", "ERST2", "ERST3", "LC1", "LC2", "LC3"), clustercut_12_ward == 2)
+
+heatmap.2(heat_clu_E, col=r, scale = "row", cexCol = 1, labRow = NA, key = FALSE, trace = "none", density.info = "none", dendrogram = "row", Colv = NA)
+
+heat_clu_L <- rbind(heat_clu_1, heat_clu_2, heat_clu_3, heat_clu_4, heat_clu_5, heat_clu_6)
+heat_clu_E <- rbind(heat_clu_9, heat_clu_12.2, heat_clu_13, heat_clu_15, heat_clu_16, heat_clu_10)
+heat_clu_D <- rbind(heat_clu_7, heat_clu_8, heat_clu_12.1, heat_clu_14, heat_clu_11)
+
+heatmap.2(heat_clu_L, col=r, scale = "row", cexCol = 1, labRow = rownames(heat_clu_L), key = FALSE, trace = "none", density.info = "none", dendrogram = "none", Colv = NA, Rolv = NA)
+tiff(filename = "heat_LC.tiff", width = 5, height = 7, units = "in", res=300)
+
+heatmap.2(heat_clu_E, col=r, scale = "row", cexCol = 1, labRow = rownames(heat_clu_E), key = FALSE, trace = "none", density.info = "none", dendrogram = "none", Colv = NA)
+tiff(filename = "heat_ER.tiff", width = 5, height = 7, units = "in", res=300)
+
+heatmap.2(heat_clu_D, col=r, scale = "row", cexCol = 1, labRow = rownames(heat_clu_D), key = FALSE, trace = "none", density.info = "none", dendrogram = "none", Colv = NA)
+tiff(filename = "heat_D.tiff", width = 5, height = 7, units = "in", res=300)
 
 #p value clustering
 library(pvclust)
