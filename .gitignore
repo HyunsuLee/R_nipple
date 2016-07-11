@@ -4,6 +4,6 @@
 /**/*.tiff
 /**/*.pdf
 /**/*.zip
-/**/*.Rroj
+/**/*.Rproj
 /**/*.csv
 .ipynb_checkpoints
