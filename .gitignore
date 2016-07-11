@@ -6,4 +6,6 @@
 /**/*.zip
 /**/*.Rproj
 /**/*.csv
+/**/*.tif
+/**/*.txt
 .ipynb_checkpoints
