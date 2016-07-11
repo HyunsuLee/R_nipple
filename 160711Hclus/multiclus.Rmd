@@ -22,3 +22,32 @@ require(preprocessCore)
 d <- read.table("rawdata_fpkm_beforecorrection.txt", header = TRUE)
 ```
 
+## data process
+```{r, echo=FALSE}
+d.m <- as.matrix(d)
+
+d.m = d.m + 1
+
+d.m.log <- log10(d.m)
+
+d.m.log.nq <- normalize.quantiles(d.m.log)
+colnames(d.m.log.nq) <- colnames(d.m.log)
+rownames(d.m.log.nq) <- rownames(d.m.log)
+
+# data exporting. R too slow to process correlation matrix.
+write.table(d.m.log.nq, file = "log_nq.txt")
+```
+
+## clustering for heatmap
+```{r, echo=FALSE}
+# correlation clustering
+cor_t <-cor(t(d.m.log.nq))
+cor_t.dist <-dist(d.m.log.nq)
+cor_hclu_avg <-hclust(cor_t.dist, method = "average")
+cor_hclu_com <-hclust(cor_t.dist, method = "complete")
+cor_hclu_ward <-hclust(cor_t.dist, method = "ward.D2")
+
+
+
+```
+
