@@ -17,35 +17,35 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 require(reshape2)
 require(gplots)
 require(preprocessCore)
-
+require(bigmemory)
 
 d <- read.table("rawdata_fpkm_beforecorrection.txt", header = TRUE)
 ```
 
 ## data process
 ```{r, echo=FALSE}
-d.m <- as.matrix(d)
+dMat <- as.matrix(d)
 
-d.m = d.m + 1
+dMat = dMat + 1
 
-d.m.log <- log10(d.m)
+dMatLog <- log10(dMat)
 
-d.m.log.nq <- normalize.quantiles(d.m.log)
-colnames(d.m.log.nq) <- colnames(d.m.log)
-rownames(d.m.log.nq) <- rownames(d.m.log)
+dMatLogNQ <- normalize.quantiles(dMatLog)
+colnames(dMatLogNQ) <- colnames(dMatLog)
+rownames(dMatLogNQ) <- rownames(dMatLog)
 
 # data exporting. R too slow to process correlation matrix.
-write.table(d.m.log.nq, file = "log_nq.txt")
+write.csv(dMatLogNQ, file = "log_nq.csv")
 ```
 
 ## clustering for heatmap
 ```{r, echo=FALSE}
 # correlation clustering
-cor_t <-cor(t(d.m.log.nq))
-cor_t.dist <-dist(d.m.log.nq)
-cor_hclu_avg <-hclust(cor_t.dist, method = "average")
-cor_hclu_com <-hclust(cor_t.dist, method = "complete")
-cor_hclu_ward <-hclust(cor_t.dist, method = "ward.D2")
+# cor <- as.big.matrix(dMatLogNQ)
+corDist <-dist(dMatLogNQ)
+corHCluAVG <-hclust(corDist, method = "average")
+corHCluCOM <-hclust(corDist, method = "complete")
+corHCluWARD <-hclust(corDist, method = "ward.D2")
 
 
 
