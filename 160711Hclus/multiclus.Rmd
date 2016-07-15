@@ -23,6 +23,20 @@ d_c <- read.csv("160715/chin.csv", header = TRUE)
 d_d <- read.csv("160715/dorsal.csv", header = TRUE)
 d_v <- read.csv("160715/ventral.csv", header = TRUE)
 ```
+## Definefunction 
+```{r}
+RNAseq <- function(x_data){
+  require(preprocessCore)
+  x_mat <-as.matrix(x_data[3:16])
+  x_mat = x_mat + 1
+  x_mat_log = log10(x_mat)
+  x_mat_log_nq = normalize.quantiles(x_mat_log)
+  colnames(x_mat_log_nq) <- colnames(x_mat_log)
+  rownames(x_mat_log_nq) <- t(x_data[1])
+  return(x_mat_log_nq)
+}
+
+```
 
 ## data process
 ```{r, echo=FALSE}
@@ -52,15 +66,29 @@ corHCluAVG_v <-hclust(corDist_v, method = "average")
 corHCluCOM_v <-hclust(corDist_v, method = "complete")
 corHCluWARD_v <-hclust(corDist_v, method = "ward.D2")
 
+# dendrogram
+corAVG_dend_c <- as.dendrogram(corHCluAVG_c)
+corCOM_dend_c <- as.dendrogram(corHCluCOM_c)
+corWARD_dend_c <- as.dendrogram(corHCluWARD_c)
 
+corAVG_dend_d <- as.dendrogram(corHCluAVG_d)
+corCOM_dend_d <- as.dendrogram(corHCluCOM_d)
+corWARD_dend_d <- as.dendrogram(corHCluWARD_d)
+
+
+corAVG_dend_v <- as.dendrogram(corHCluAVG_v)
+corCOM_dend_v <- as.dendrogram(corHCluCOM_v)
+corWARD_dend_v <- as.dendrogram(corHCluWARD_v)
 
 ```
 
 ## heatmap plotting
 ```{r, echo=FALSE}
-RYG <- colorRampPalette(c("firebrick2", "lightgoldenrodyellow", "green"))(n = 299)
+r <- colorRampPalette(c("firebrick2", "lightgoldenrodyellow", "darkolivegreen4"))(n = 299)
 
-
+heatmap.2(d_c_m, col=r, scale = "row", cexCol = 1, labRow = NA, key = TRUE, trace = "none", density.info = "none", dendrogram = "row", Rowv=corWARD_dend_c)
+heatmap.2(d_d_m, col=r, scale = "row", cexCol = 1, labRow = NA, key = TRUE, trace = "none", density.info = "none")
+heatmap.2(d_v_m, col=r, scale = "row", cexCol = 1, labRow = NA, key = TRUE, trace = "none", density.info = "none")
 
 
 ```
