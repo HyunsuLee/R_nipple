@@ -37,10 +37,29 @@ d_v_m <- RNAseq(d_v)
 ```{r, echo=FALSE}
 # correlation clustering
 # cor <- as.big.matrix(dMatLogNQ)
-corDist <-dist(dMatLogNQ)
-corHCluAVG <-hclust(corDist, method = "average")
-corHCluCOM <-hclust(corDist, method = "complete")
-corHCluWARD <-hclust(corDist, method = "ward.D2")
+corDist_c <-dist(d_c_m)
+corHCluAVG_c <-hclust(corDist_c, method = "average")
+corHCluCOM_c <-hclust(corDist_c, method = "complete")
+corHCluWARD_c <-hclust(corDist_c, method = "ward.D2")
+
+corDist_d <-dist(d_d_m)
+corHCluAVG_d <-hclust(corDist_d, method = "average")
+corHCluCOM_d <-hclust(corDist_d, method = "complete")
+corHCluWARD_d <-hclust(corDist_d, method = "ward.D2")
+
+corDist_v <-dist(d_v_m)
+corHCluAVG_v <-hclust(corDist_v, method = "average")
+corHCluCOM_v <-hclust(corDist_v, method = "complete")
+corHCluWARD_v <-hclust(corDist_v, method = "ward.D2")
+
+
+
+```
+
+## heatmap plotting
+```{r, echo=FALSE}
+RYG <- colorRampPalette(c("firebrick2", "lightgoldenrodyellow", "green"))(n = 299)
+
 
 
 
