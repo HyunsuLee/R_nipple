@@ -8,4 +8,5 @@
 /**/*.csv
 /**/*.tif
 /**/*.txt
+/**/*.html
 .ipynb_checkpoints
