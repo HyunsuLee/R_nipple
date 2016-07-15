@@ -17,7 +17,7 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 require(reshape2)
 require(gplots)
 require(preprocessCore)
-require(bigmemory)
+#require(bigmemory)
 
 d_c <- read.csv("160715/chin.csv", header = TRUE)
 d_d <- read.csv("160715/dorsal.csv", header = TRUE)
@@ -26,25 +26,11 @@ d_v <- read.csv("160715/ventral.csv", header = TRUE)
 
 ## data process
 ```{r, echo=FALSE}
-<<<<<<< HEAD
 #RNAseq.R function, matrix conversion, log10, normalize quantile.
 d_c_m <- RNAseq(d_c)
 d_d_m <- RNAseq(d_d)
 d_v_m <- RNAseq(d_v)
-=======
-dMat <- as.matrix(d)
 
-dMat = dMat + 1
-
-dMatLog <- log10(dMat)
-
-dMatLogNQ <- normalize.quantiles(dMatLog)
-colnames(dMatLogNQ) <- colnames(dMatLog)
-rownames(dMatLogNQ) <- rownames(dMatLog)
-
-# data exporting. R too slow to process correlation matrix.
-write.csv(dMatLogNQ, file = "log_nq.csv")
->>>>>>> e46bf9fd8970e34888a8168a2519416077aec9ba
 ```
 
 ## clustering for heatmap
