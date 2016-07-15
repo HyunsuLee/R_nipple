@@ -10,3 +10,13 @@
 /**/*.txt
 /**/*.html
 /**/*.ipynb_checkpoints
+/**/*.xlsx
+/**/*.png
+<<<<<<< HEAD
+
+=======
+<<<<<<< HEAD
+.Rproj.user
+=======
+>>>>>>> b49013da703c94f1ec435f3cdf3f76cd71145d3c
+>>>>>>> 4f63475bd1a36d2a58ddcd0ab52ab6dc22c83eea
