@@ -19,23 +19,17 @@ require(gplots)
 require(preprocessCore)
 
 
-d <- read.table("rawdata_fpkm_beforecorrection.txt", header = TRUE)
+d_c <- read.csv("160715/chin.csv", header = TRUE)
+d_d <- read.csv("160715/dorsal.csv", header = TRUE)
+d_v <- read.csv("160715/ventral.csv", header = TRUE)
 ```
 
 ## data process
 ```{r, echo=FALSE}
-d.m <- as.matrix(d)
-
-d.m = d.m + 1
-
-d.m.log <- log10(d.m)
-
-d.m.log.nq <- normalize.quantiles(d.m.log)
-colnames(d.m.log.nq) <- colnames(d.m.log)
-rownames(d.m.log.nq) <- rownames(d.m.log)
-
-# data exporting. R too slow to process correlation matrix.
-write.table(d.m.log.nq, file = "log_nq.txt")
+#RNAseq.R function, matrix conversion, log10, normalize quantile.
+d_c_m <- RNAseq(d_c)
+d_d_m <- RNAseq(d_d)
+d_v_m <- RNAseq(d_v)
 ```
 
 ## clustering for heatmap
