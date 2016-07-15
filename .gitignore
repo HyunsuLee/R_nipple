@@ -1,6 +1,6 @@
-.Rproj.user
-.Rhistory
-.RData
+/**/*.Rproj.user
+/**/*.Rhistory
+/**/*.RData
 /**/*.tiff
 /**/*.pdf
 /**/*.zip
@@ -9,4 +9,4 @@
 /**/*.tif
 /**/*.txt
 /**/*.html
-.ipynb_checkpoints
+/**/*.ipynb_checkpoints
