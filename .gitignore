@@ -4,11 +4,12 @@
 /**/*.tiff
 /**/*.pdf
 /**/*.zip
-/**/*.Rproj
-/**/*.csv
+
+
 /**/*.tif
 /**/*.txt
 /**/*.html
 /**/*.ipynb_checkpoints
 /**/*.xlsx
 /**/*.png
+.Rproj.user
