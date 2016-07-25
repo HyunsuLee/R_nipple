@@ -1,0 +1,22 @@
+---
+title: "725Heatmap"
+author: "Hyunsu Lee"
+date: "July 25, 2016"
+output: html_document
+---
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+
+## Data load & libary load
+
+```{r, echo = FALSE}
+require(reshape2)
+require(gplots)
+require(preprocessCore)
+#require(bigmemory)
+
+DCT <- read.csv("DEG_DCT.csv", header = TRUE)
+EAR <- read.csv("DEG_ear.csv", header = TRUE)
+LC <- read.csv("DEG_LC.csv", header = TRUE)
+```
