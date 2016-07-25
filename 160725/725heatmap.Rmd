@@ -1,5 +1,5 @@
 ---
-title: "725Heatmap"
+title: "7/25 Heatmap"
 author: "Hyunsu Lee"
 date: "July 25, 2016"
 output: html_document
@@ -17,8 +17,9 @@ EAR <- read.csv("DEG_ear.csv", header = TRUE)
 LC <- read.csv("DEG_LC.csv", header = TRUE)
 ```
 
-## Definefunction 
+
 ```{r, echo=FALSE, include=FALSE}
+## Definefunction 
 RNAseq <- function(x_data){
   require(preprocessCore)
   x_mat <-as.matrix(x_data[2:8])
@@ -33,8 +34,9 @@ RNAseq <- function(x_data){
 ```
 
 
+
+```{r, echo=FALSE, include = FALSE}
 ## data process
-```{r, echo=FALSE}
 #RNAseq.R function, matrix conversion, log10, normalize quantile.
 DCT_m <- RNAseq(DCT)
 EAR_m <- RNAseq(EAR)
@@ -50,12 +52,13 @@ attach(LC)
 LC_m_sorted <- RNAseq(LC[order(-LC1, -LC2, -LC3),])
 
 
-t <- rbind.data.frame(DCT, EAR, LC)
+# t <- rbind.data.frame(DCT, EAR, LC)
 
 ```
 
+
+```{r, echo=FALSE, include = FALSE}
 ## distance correlation
-```{r, echo=FALSE}
 corDist_DCT <- dist(DCT_m)
 corDist_EAR <- dist(EAR_m)
 corDist_LC <- dist(LC_m)
@@ -69,7 +72,9 @@ cluCOM_dend_EAR <- as.dendrogram(hCluCOM_EAR)
 cluCOM_dend_LC <- as.dendrogram(hCluCOM_LC)
 ```
 
-## heatmap plot
+
+## hierachical clustering(3 plot)
+    DCT signature
 ```{r, echo=FALSE}
 r <- colorRampPalette(c("firebrick2", "lightgoldenrodyellow", "darkolivegreen"))(n = 299)
 # r <- colorRampPalette(c("firebrick2", "lightgoldenrodyellow", "green"))(n = 299)
@@ -77,19 +82,47 @@ r <- colorRampPalette(c("firebrick2", "lightgoldenrodyellow", "darkolivegreen"))
 rBr <- brewer.pal(11, "RdYlGn")
 
 heatmap.2(DCT_m, col=r, scale = "row", cexCol = 1, labRow = NA, key = TRUE, trace = "none", density.info = "none", dendrogram = "row", Rowv=cluCOM_dend_DCT)
-
-heatmap.2(EAR_m, col=r, scale = "row", cexCol = 1, labRow = NA, key = TRUE, trace = "none", density.info = "none", dendrogram = "row", Rowv=cluCOM_dend_EAR)
-
-heatmap.2(LC_m, col=r, scale = "row", cexCol = 1, labRow = NA, key = TRUE, trace = "none", density.info = "none", dendrogram = "row", Rowv=cluCOM_dend_LC)
-
-
-## sorted version
-heatmap.2(DCT_m_sorted, col=rBr, scale = "row", cexCol = 1, labRow = NA, key = TRUE, trace = "none", density.info = "none", dendrogram = "none", Rowv = "none", Colv = "none")
-
-heatmap.2(EAR_m_sorted, col=rBr, scale = "row", cexCol = 1, labRow = NA, key = TRUE, trace = "none", density.info = "none", dendrogram = "none", Rowv = "none", Colv = "none")
-
-heatmap.2(LC_m_sorted, col=rBr, scale = "row", cexCol = 1, labRow = NA, key = TRUE, trace = "none", density.info = "none", dendrogram = "none", Rowv = "none", Colv = "none")
-
 ```
 
+    ear signature
+```{r, echo=FALSE}
+heatmap.2(EAR_m, col=r, scale = "row", cexCol = 1, labRow = NA, key = TRUE, trace = "none", density.info = "none", dendrogram = "row", Rowv=cluCOM_dend_EAR)
+```
 
+    LC signature
+```{r, echo=FALSE}
+heatmap.2(LC_m, col=r, scale = "row", cexCol = 1, labRow = NA, key = TRUE, trace = "none", density.info = "none", dendrogram = "row", Rowv=cluCOM_dend_LC)
+```
+
+## Sorted version(6 plot)
+### Scaling by row
+    DCT signature
+```{r, echo=FALSE}
+heatmap.2(DCT_m_sorted, col=rBr, scale = "row", cexCol = 1, labRow = NA, key = TRUE, trace = "none", density.info = "none", dendrogram = "none", Rowv = "none", Colv = "none")
+```
+
+    ear signature
+```{r, echo=FALSE}
+heatmap.2(EAR_m_sorted, col=rBr, scale = "row", cexCol = 1, labRow = NA, key = TRUE, trace = "none", density.info = "none", dendrogram = "none", Rowv = "none", Colv = "none")
+```
+
+    LC signature
+```{r, echo=FALSE}
+heatmap.2(LC_m_sorted, col=rBr, scale = "row", cexCol = 1, labRow = NA, key = TRUE, trace = "none", density.info = "none", dendrogram = "none", Rowv = "none", Colv = "none")
+```
+
+### Scaling by column
+    DCT signature
+```{r, echo=FALSE}
+heatmap.2(DCT_m_sorted, col=r, scale = "col", cexCol = 1, labRow = NA, key = TRUE, trace = "none", density.info = "none", dendrogram = "none", Rowv = "none", Colv = "none")
+```
+
+   ear signature
+```{r, echo=FALSE}
+heatmap.2(EAR_m_sorted, col=r, scale = "col", cexCol = 1, labRow = NA, key = TRUE, trace = "none", density.info = "none", dendrogram = "none", Rowv = "none", Colv = "none")
+```
+   
+   LC signature
+```{r, echo=FALSE}
+heatmap.2(LC_m_sorted, col=r, scale = "col", cexCol = 1, labRow = NA, key = TRUE, trace = "none", density.info = "none", dendrogram = "none", Rowv = "none", Colv = "none")
+```
