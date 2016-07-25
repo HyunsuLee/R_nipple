@@ -51,9 +51,6 @@ EAR_m_sorted <- RNAseq(EAR[order(-ERST2, -ERST3),])
 attach(LC)
 LC_m_sorted <- RNAseq(LC[order(-LC1, -LC2, -LC3),])
 
-
-# t <- rbind.data.frame(DCT, EAR, LC)
-
 ```
 
 
@@ -74,7 +71,7 @@ cluCOM_dend_LC <- as.dendrogram(hCluCOM_LC)
 
 
 ## hierachical clustering(3 plot)
-    DCT signature
+   DCT signature
 ```{r, echo=FALSE}
 r <- colorRampPalette(c("firebrick2", "lightgoldenrodyellow", "darkolivegreen"))(n = 299)
 # r <- colorRampPalette(c("firebrick2", "lightgoldenrodyellow", "green"))(n = 299)
@@ -84,35 +81,35 @@ rBr <- brewer.pal(11, "RdYlGn")
 heatmap.2(DCT_m, col=r, scale = "row", cexCol = 1, labRow = NA, key = TRUE, trace = "none", density.info = "none", dendrogram = "row", Rowv=cluCOM_dend_DCT)
 ```
 
-    ear signature
+   ear signature
 ```{r, echo=FALSE}
 heatmap.2(EAR_m, col=r, scale = "row", cexCol = 1, labRow = NA, key = TRUE, trace = "none", density.info = "none", dendrogram = "row", Rowv=cluCOM_dend_EAR)
 ```
 
-    LC signature
+   LC signature
 ```{r, echo=FALSE}
 heatmap.2(LC_m, col=r, scale = "row", cexCol = 1, labRow = NA, key = TRUE, trace = "none", density.info = "none", dendrogram = "row", Rowv=cluCOM_dend_LC)
 ```
 
 ## Sorted version(6 plot)
 ### Scaling by row
-    DCT signature
+   DCT signature
 ```{r, echo=FALSE}
 heatmap.2(DCT_m_sorted, col=rBr, scale = "row", cexCol = 1, labRow = NA, key = TRUE, trace = "none", density.info = "none", dendrogram = "none", Rowv = "none", Colv = "none")
 ```
 
-    ear signature
+   ear signature
 ```{r, echo=FALSE}
 heatmap.2(EAR_m_sorted, col=rBr, scale = "row", cexCol = 1, labRow = NA, key = TRUE, trace = "none", density.info = "none", dendrogram = "none", Rowv = "none", Colv = "none")
 ```
 
-    LC signature
+   LC signature
 ```{r, echo=FALSE}
 heatmap.2(LC_m_sorted, col=rBr, scale = "row", cexCol = 1, labRow = NA, key = TRUE, trace = "none", density.info = "none", dendrogram = "none", Rowv = "none", Colv = "none")
 ```
 
 ### Scaling by column
-    DCT signature
+   DCT signature
 ```{r, echo=FALSE}
 heatmap.2(DCT_m_sorted, col=r, scale = "col", cexCol = 1, labRow = NA, key = TRUE, trace = "none", density.info = "none", dendrogram = "none", Rowv = "none", Colv = "none")
 ```
@@ -126,3 +123,28 @@ heatmap.2(EAR_m_sorted, col=r, scale = "col", cexCol = 1, labRow = NA, key = TRU
 ```{r, echo=FALSE}
 heatmap.2(LC_m_sorted, col=r, scale = "col", cexCol = 1, labRow = NA, key = TRUE, trace = "none", density.info = "none", dendrogram = "none", Rowv = "none", Colv = "none")
 ```
+
+
+
+```{r, include=FALSE}
+## total gene clustering
+t <- rbind.data.frame(DCT, EAR, LC)
+t_m <- RNAseq(t)
+
+corDist_total <- dist(t_m)
+
+hCluCOM_total <-hclust(corDist_total, method = "complete")
+
+cluCOM_dend_total <- as.dendrogram(hCluCOM_total)
+
+```
+
+### total h-Cluster heatmap
+```{r, echo=FALSE}
+heatmap.2(t_m, col=r, scale = "row", cexCol = 1, labRow = NA, key = TRUE, trace = "none", density.info = "none", dendrogram = "row", Rowv=cluCOM_dend_total)
+```
+
+```{r, include= FALSE}
+
+```
+
