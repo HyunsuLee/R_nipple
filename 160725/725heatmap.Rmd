@@ -5,18 +5,91 @@ date: "July 25, 2016"
 output: html_document
 ---
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-
-## Data load & libary load
-
-```{r, echo = FALSE}
+```{r, echo = FALSE, include = FALSE}
+# Data load & library load
 require(reshape2)
 require(gplots)
 require(preprocessCore)
-#require(bigmemory)
+require(RColorBrewer)
 
 DCT <- read.csv("DEG_DCT.csv", header = TRUE)
 EAR <- read.csv("DEG_ear.csv", header = TRUE)
 LC <- read.csv("DEG_LC.csv", header = TRUE)
 ```
+
+## Definefunction 
+```{r, echo=FALSE, include=FALSE}
+RNAseq <- function(x_data){
+  require(preprocessCore)
+  x_mat <-as.matrix(x_data[2:8])
+  x_mat = x_mat + 1
+  x_mat_log = log10(x_mat)
+  x_mat_log_nq = normalize.quantiles(x_mat_log)
+  colnames(x_mat_log_nq) <- colnames(x_mat_log)
+  rownames(x_mat_log_nq) <- t(x_data[1])
+  return(x_mat_log_nq)
+}
+
+```
+
+
+## data process
+```{r, echo=FALSE}
+#RNAseq.R function, matrix conversion, log10, normalize quantile.
+DCT_m <- RNAseq(DCT)
+EAR_m <- RNAseq(EAR)
+LC_m <- RNAseq(LC)
+
+attach(DCT)
+DCT_m_sorted <- RNAseq(DCT[order(-DCT1, -DCT2),])
+
+attach(EAR)
+EAR_m_sorted <- RNAseq(EAR[order(-ERST2, -ERST3),])
+
+attach(LC)
+LC_m_sorted <- RNAseq(LC[order(-LC1, -LC2, -LC3),])
+
+
+t <- rbind.data.frame(DCT, EAR, LC)
+
+```
+
+## distance correlation
+```{r, echo=FALSE}
+corDist_DCT <- dist(DCT_m)
+corDist_EAR <- dist(EAR_m)
+corDist_LC <- dist(LC_m)
+
+hCluCOM_DCT <-hclust(corDist_DCT, method = "complete")
+hCluCOM_EAR <-hclust(corDist_EAR, method = "complete")
+hCluCOM_LC <-hclust(corDist_LC, method = "complete")
+
+cluCOM_dend_DCT <- as.dendrogram(hCluCOM_DCT)
+cluCOM_dend_EAR <- as.dendrogram(hCluCOM_EAR)
+cluCOM_dend_LC <- as.dendrogram(hCluCOM_LC)
+```
+
+## heatmap plot
+```{r, echo=FALSE}
+r <- colorRampPalette(c("firebrick2", "lightgoldenrodyellow", "darkolivegreen"))(n = 299)
+# r <- colorRampPalette(c("firebrick2", "lightgoldenrodyellow", "green"))(n = 299)
+
+rBr <- brewer.pal(11, "RdYlGn")
+
+heatmap.2(DCT_m, col=r, scale = "row", cexCol = 1, labRow = NA, key = TRUE, trace = "none", density.info = "none", dendrogram = "row", Rowv=cluCOM_dend_DCT)
+
+heatmap.2(EAR_m, col=r, scale = "row", cexCol = 1, labRow = NA, key = TRUE, trace = "none", density.info = "none", dendrogram = "row", Rowv=cluCOM_dend_EAR)
+
+heatmap.2(LC_m, col=r, scale = "row", cexCol = 1, labRow = NA, key = TRUE, trace = "none", density.info = "none", dendrogram = "row", Rowv=cluCOM_dend_LC)
+
+
+## sorted version
+heatmap.2(DCT_m_sorted, col=rBr, scale = "row", cexCol = 1, labRow = NA, key = TRUE, trace = "none", density.info = "none", dendrogram = "none", Rowv = "none", Colv = "none")
+
+heatmap.2(EAR_m_sorted, col=rBr, scale = "row", cexCol = 1, labRow = NA, key = TRUE, trace = "none", density.info = "none", dendrogram = "none", Rowv = "none", Colv = "none")
+
+heatmap.2(LC_m_sorted, col=rBr, scale = "row", cexCol = 1, labRow = NA, key = TRUE, trace = "none", density.info = "none", dendrogram = "none", Rowv = "none", Colv = "none")
+
+```
+
+
