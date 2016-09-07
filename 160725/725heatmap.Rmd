@@ -81,19 +81,21 @@ rBr <- brewer.pal(11, "RdYlGn")
 
 tiff(filename = "DCT.tif", width = 5, height = 7, units = "in", res=300)
 heatmap.2(DCT_m, col=r, scale = "row", cexCol = 1, labRow = NA, key = TRUE, keysize = 1.5, trace = "none", density.info = "none", dendrogram = "none", Rowv=cluCOM_dend_DCT, Colv = FALSE)
- 
+dev.off() 
 ```
 
    ear signature
 ```{r, echo=FALSE}
 tiff(filename = "ear.tif", width = 5, height = 7, units = "in", res=300)
 heatmap.2(EAR_m, col=r, scale = "row", cexCol = 1, labRow = NA, key = TRUE,keysize = 1.5, trace = "none", density.info = "none", dendrogram = "none", Rowv=cluCOM_dend_EAR, Colv = FALSE)
+dev.off()
 ```
 
    LC signature
 ```{r, echo=FALSE}
 tiff(filename = "LC.tif", width = 5, height = 7, units = "in", res=300)
 heatmap.2(LC_m, col=r, scale = "row", cexCol = 1, labRow = NA, key = TRUE, keysize = 1.5, trace = "none", density.info = "none", dendrogram = "none", Rowv=cluCOM_dend_LC, Colv = FALSE)
+dev.off()
 ```
 
 ## Sorted version(6 plot)
