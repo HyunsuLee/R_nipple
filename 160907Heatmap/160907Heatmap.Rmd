@@ -13,7 +13,6 @@ require(gplots)
 require(preprocessCore)
 require(RColorBrewer)
 
-
 D33 <- read.csv("go_D33.csv", header = TRUE)
 AD <- read.csv("go_AD.csv", header = TRUE)
 RIB <- read.csv("go_RIB.csv", header = TRUE)
