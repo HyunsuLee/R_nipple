@@ -11,6 +11,7 @@ require(reshape2)
 require(gplots)
 require(preprocessCore)
 require(RColorBrewer)
+require(ggplot2)
 
 DCT <- read.csv("DEG_DCT.csv", header = TRUE)
 EAR <- read.csv("DEG_ear.csv", header = TRUE)
@@ -25,10 +26,10 @@ RNAseq <- function(x_data){
   x_mat <-as.matrix(x_data[2:8])
   x_mat = x_mat + 1
   x_mat_log = log10(x_mat)
-  x_mat_log_nq = normalize.quantiles(x_mat_log)
-  colnames(x_mat_log_nq) <- colnames(x_mat_log)
-  rownames(x_mat_log_nq) <- t(x_data[1])
-  return(x_mat_log_nq)
+  #x_mat_log_nq = normalize.quantiles(x_mat_log)
+  #colnames(x_mat_log_nq) <- colnames(x_mat_log)
+  rownames(x_mat_log) <- t(x_data[1])
+  return(x_mat_log)
 }
 
 ```
@@ -37,11 +38,11 @@ RNAseq <- function(x_data){
 
 ```{r, echo=FALSE, include = FALSE}
 ## data process
-#RNAseq.R function, matrix conversion, log10, normalize quantile.
+#RNAseq.R function, matrix conversion, log10, do not normalize quantile.
 DCT_m <- RNAseq(DCT)
 EAR_m <- RNAseq(EAR)
 LC_m <- RNAseq(LC)
-
+'''
 attach(DCT)
 DCT_m_sorted <- RNAseq(DCT[order(-DCT1, -DCT2),])
 
@@ -50,7 +51,7 @@ EAR_m_sorted <- RNAseq(EAR[order(-ERST2, -ERST3),])
 
 attach(LC)
 LC_m_sorted <- RNAseq(LC[order(-LC1, -LC2, -LC3),])
-
+'''
 ```
 
 
@@ -73,22 +74,26 @@ cluCOM_dend_LC <- as.dendrogram(hCluCOM_LC)
 ## hierachical clustering(3 plot)
    DCT signature
 ```{r, echo=FALSE}
-r <- colorRampPalette(c("firebrick2", "lightgoldenrodyellow", "darkolivegreen"))(n = 299)
+r <- colorRampPalette(c("firebrick2", "lightgoldenrodyellow", "darkolivegreen4"))(n = 299)
 # r <- colorRampPalette(c("firebrick2", "lightgoldenrodyellow", "green"))(n = 299)
 
 rBr <- brewer.pal(11, "RdYlGn")
 
-heatmap.2(DCT_m, col=r, scale = "row", cexCol = 1, labRow = NA, key = TRUE, trace = "none", density.info = "none", dendrogram = "row", Rowv=cluCOM_dend_DCT)
+tiff(filename = "DCT.tif", width = 5, height = 7, units = "in", res=300)
+heatmap.2(DCT_m, col=r, scale = "row", cexCol = 1, labRow = NA, key = TRUE, keysize = 1.5, trace = "none", density.info = "none", dendrogram = "none", Rowv=cluCOM_dend_DCT, Colv = FALSE)
+ 
 ```
 
    ear signature
 ```{r, echo=FALSE}
-heatmap.2(EAR_m, col=r, scale = "row", cexCol = 1, labRow = NA, key = TRUE, trace = "none", density.info = "none", dendrogram = "row", Rowv=cluCOM_dend_EAR)
+tiff(filename = "ear.tif", width = 5, height = 7, units = "in", res=300)
+heatmap.2(EAR_m, col=r, scale = "row", cexCol = 1, labRow = NA, key = TRUE,keysize = 1.5, trace = "none", density.info = "none", dendrogram = "none", Rowv=cluCOM_dend_EAR, Colv = FALSE)
 ```
 
    LC signature
 ```{r, echo=FALSE}
-heatmap.2(LC_m, col=r, scale = "row", cexCol = 1, labRow = NA, key = TRUE, trace = "none", density.info = "none", dendrogram = "row", Rowv=cluCOM_dend_LC)
+tiff(filename = "LC.tif", width = 5, height = 7, units = "in", res=300)
+heatmap.2(LC_m, col=r, scale = "row", cexCol = 1, labRow = NA, key = TRUE, keysize = 1.5, trace = "none", density.info = "none", dendrogram = "none", Rowv=cluCOM_dend_LC, Colv = FALSE)
 ```
 
 ## Sorted version(6 plot)
@@ -144,7 +149,33 @@ cluCOM_dend_total <- as.dendrogram(hCluCOM_total)
 heatmap.2(t_m, col=r, scale = "row", cexCol = 1, labRow = NA, key = TRUE, trace = "none", density.info = "none", dendrogram = "row", Rowv=cluCOM_dend_total)
 ```
 
-```{r, include= FALSE}
 
+
+```{r, include= FALSE}
+'''
+DCT_df <- as.data.frame(DCT_m)
+GO_DCT <- as.factor(c(357:1))
+GN_DCT <- DCT[1]
+DCT_df <- cbind(DCT_df, GO_DCT, GN_DCT)
+DCT_melt <- melt(DCT_df)
+
+DCT_raw <- cbind(DCT, GO_DCT)
+DCT_raw_melt <-melt(DCT_raw)
+
+```
+
+```{r, echo=FALSE}
+ggplot(DCT_melt, aes(variable, GO_DCT)) +
+  #heatmap은 tile형태로 그림. 
+  geom_tile(aes(fill = value)) + 
+  #heatmap용 gradient 먹이기.
+  scale_fill_gradientn (colours = r) +
+  #gene.order 숫자로 그린다음에 다시 gene name을 넣어줌.
+  scale_y_discrete(breaks =NULL) +
+  #x축 labeling없애기, legend 다 없애기.
+  scale_x_discrete(breaks=NULL) + labs(x ="", y="")
++ theme(legend.position="none")
+
+'''
 ```
 
