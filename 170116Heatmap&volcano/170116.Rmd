@@ -21,8 +21,10 @@ require(gplots)
 require(preprocessCore)
 require(RColorBrewer)
 require(ggplot2)
+require(ggrepel)
 
 data <- read.csv("garza_heatmap.csv", header = TRUE)
+data_v <- read.csv("garza_volcano.csv", header = TRUE)
 ```
 
 ```{r, echo = FALSE, include=FALSE}
@@ -32,9 +34,12 @@ rownames(data_m) <- t(data[2])
 ```
 
 ```{r, echo=FALSE, include=FALSE}
+'''
 corD_data <- dist(data_m)
 hCluCOM_data <-hclust(corD_data, method = "complete")
 cluCOM_dend_data <- as.dendrogram(hCluCOM_data)
+#no need to clustering. Dr. Oh already did it.
+'''
 ```
 
 ## heatmap plot
@@ -46,3 +51,42 @@ heatmap.2(data_m, col=hr, scale = "row", cexCol = 1, labRow = NA, key = TRUE, ke
 dev.off() 
 ```
 
+## data subsetting for volcano plot
+```{r, echo=FALSE, include=FALSE}
+#bald vs haired
+data_vol <- data_v[2:4]
+colnames(data_vol) <- c("gene", "fold", "pvalue")
+
+#krp wt raw data는 volcano plot을 위해 log 값 처리.(fold값은 이미 log)
+data_vol$pvalue <- -log10(data_vol$pvalue)
+
+#fold change 2,1,0,-1,2를 기준으로 Factorization -> color grouping 
+data_vol$color_flag <- ifelse(data_vol$fold > 2, "a", ifelse(data_vol$fold < -2, "f", ifelse(data_vol$fold > 1, "b", ifelse(data_vol$fold < -1, "e", ifelse(data_vol$fold > 0, "c", "d")))))
+
+#유전자 이름을 tagging 하는 기준. 
+gene_tag <- subset(data_vol, pvalue >2.5)
+gene_tag <- subset(gene_tag, fold > 1.8 | fold < -1.8)
+```
+
+## volcano plotting
+```{r, echo=FALSE, include=FALSE}
+ggplot(data_vol, aes(fold, pvalue)) +
+  # scatter plot.
+  geom_point(aes(colour = color_flag), size = 1.2, alpha = 0.7, show.legend = FALSE) +
+  # color palette - book mark의 cook book을 볼것.
+  scale_color_brewer(palette =  "RdYlGn") +
+  # gene name tagging. 
+  # geom_text_repel(data = gene_tag, aes(fold, pvalue, label = gene), show.legend = FALSE, colour = "black") +
+  # 배경 하얗게.
+  theme_classic()+theme_linedraw()+theme_light() +
+  # axis labels.
+  labs(x = "Log2 fold change", y = "-Log10(p value)") 
+  #+ geom_point(size = I(0.5), alpha = I(0.2),  color= "white", show.legend = FALSE)
+  #+ scale_color_manual(breaks = krpwtsub$color_flag, values = c("#24DC1F", "#8DFF54", "#A0BE1E","#F2CB20", "#CC401C", "#FF0A0C")) +
+
+ggsave("volcano_199.tiff", dpi = 300, units = c("in"), width = 7, height = 5) # p_value 2.5를 기준
+
+ggsave("volcano_59.tiff", dpi = 300, units = c("in"), width = 7, height = 5) # p_value 2.5, fold 1.8를 기준
+
+ggsave("volcano_nolabel.tiff", dpi = 300, units = c("in"), width = 7, height = 5) # text_repel 주석처리
+```
