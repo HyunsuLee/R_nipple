@@ -27,3 +27,22 @@ data <- read.csv("garza_heatmap.csv", header = TRUE)
 
 ```{r, echo = FALSE, include=FALSE}
 # data matrix conversion
+data_m <-as.matrix(data[4:13])
+rownames(data_m) <- t(data[2])
+```
+
+```{r, echo=FALSE, include=FALSE}
+corD_data <- dist(data_m)
+hCluCOM_data <-hclust(corD_data, method = "complete")
+cluCOM_dend_data <- as.dendrogram(hCluCOM_data)
+```
+
+## heatmap plot
+```{r, echo=FALSE, include=FALSE}
+hr <- colorRampPalette(c("firebrick2", "lightgoldenrodyellow", "darkolivegreen4"))(n = 299)
+
+tiff(filename = "garza_heatmap.tif", width = 5, height = 7, units = "in", res=300)
+heatmap.2(data_m, col=hr, scale = "row", cexCol = 1, labRow = NA, key = TRUE, keysize = 1.5, trace = "none", density.info = "none", dendrogram = "none", Rowv=FALSE, Colv = FALSE)
+dev.off() 
+```
+
