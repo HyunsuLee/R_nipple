@@ -13,9 +13,9 @@ require(gplots)
 require(preprocessCore)
 require(RColorBrewer)
 
-D33 <- read.csv("go_D33.csv", header = TRUE)
-AD <- read.csv("go_AD.csv", header = TRUE)
-RIB <- read.csv("go_RIB.csv", header = TRUE)
+D33 <- read.csv("new_D33.csv", header = TRUE)
+AD <- read.csv("new_AD.csv", header = TRUE)
+RIB <- read.csv("new_RIB.csv", header = TRUE)
 ```
 
 ```{r, echo=FALSE, include=FALSE}
@@ -41,6 +41,9 @@ RNAseq <- function(x_data){
 D33_m <- RNAseq(D33)
 AD_m <- RNAseq(AD)
 RIB_m <- RNAseq(RIB)
+D33_ordered <- D33_m[order(-D33_m[,1],-D33_m[,2],-D33_m[,3]),]
+AD_ordered <- AD_m[order(-AD_m[,4],-AD_m[,5],-AD_m[,6]),]
+RIB_ordered <- RIB_m[order(-RIB_m[,7],-RIB_m[,8],-RIB_m[,9]),]
 ```
 
 ```{r, echo=FALSE, include = FALSE}
@@ -63,21 +66,43 @@ cluCOM_dend_RIB <- as.dendrogram(hCluCOM_RIB)
 ```{r, echo=FALSE}
 r <- colorRampPalette(c("firebrick2", "lightgoldenrodyellow", "darkolivegreen4"))(n = 299)
 
-tiff(filename = "D33.tif", width = 5, height = 6.6, units = "in", res=300)
-heatmap.2(D33_m, col=r, scale = "row", cexCol = 1, labRow = NA, key = TRUE, keysize = 1.5, trace = "none", density.info = "none", dendrogram = "none", Rowv=cluCOM_dend_D33, Colv = FALSE)
+tiff(filename = "D33.tif", width = 5, height = 10.1, units = "in", res=300)
+heatmap.2(D33_m, col=r, scale = "row", cexCol = 1, labRow = NA, key = TRUE, keysize = 1, trace = "none", density.info = "none", dendrogram = "none", Rowv=FALSE, Colv = FALSE)
 dev.off()
 ```
 
    AD signature
 ```{r, echo=FALSE}
-tiff(filename = "AD.tif", width = 5, height = 8.2, units = "in", res=300)
+tiff(filename = "AD.tif", width = 5, height = 4.2, units = "in", res=300)
 heatmap.2(AD_m, col=r, scale = "row", cexCol = 1, labRow = NA, key = TRUE,keysize = 1.5, trace = "none", density.info = "none", dendrogram = "none", Rowv=cluCOM_dend_AD, Colv = FALSE)
 dev.off()
 ```
 
    RIB signature
 ```{r, echo=FALSE}
-tiff(filename = "RIB.tif", width = 5, height = 8.5, units = "in", res=300)
+tiff(filename = "RIB.tif", width = 5, height = 9.1, units = "in", res=300)
 heatmap.2(RIB_m, col=r, scale = "row", cexCol = 1, labRow = NA, key = TRUE, keysize = 1.5, trace = "none", density.info = "none", dendrogram = "none", Rowv=cluCOM_dend_RIB, Colv = FALSE)
+dev.off()
+```
+
+
+### ordering heatmap
+```{r, echo=FALSE}
+tiff(filename = "D33_order.tif", width = 5, height = 10.1, units = "in", res=300)
+heatmap.2(D33_ordered, col=r, scale = "row", cexCol = 1, labRow = NA, key = TRUE, keysize = 1, trace = "none", density.info = "none", dendrogram = "none", Rowv=FALSE, Colv = FALSE)
+dev.off()
+```
+
+   AD signature
+```{r, echo=FALSE}
+tiff(filename = "AD_order.tif", width = 5, height = 4.2, units = "in", res=300)
+heatmap.2(AD_ordered, col=r, scale = "row", cexCol = 1, labRow = NA, key = TRUE,keysize = 1.5, trace = "none", density.info = "none", dendrogram = "none", Rowv=FALSE, Colv = FALSE)
+dev.off()
+```
+
+   RIB signature
+```{r, echo=FALSE}
+tiff(filename = "RIB_order.tif", width = 5, height = 9.1, units = "in", res=300)
+heatmap.2(RIB_ordered, col=r, scale = "row", cexCol = 1, labRow = NA, key = TRUE, keysize = 1.5, trace = "none", density.info = "none", dendrogram = "none", Rowv=FALSE, Colv = FALSE)
 dev.off()
 ```
