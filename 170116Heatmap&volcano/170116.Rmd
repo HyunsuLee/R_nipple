@@ -22,9 +22,12 @@ require(preprocessCore)
 require(RColorBrewer)
 require(ggplot2)
 require(ggrepel)
+require(affy)
 
+setwd("~/Documents/R/R_nipple/170116Heatmap&volcano")
 data <- read.csv("garza_heatmap.csv", header = TRUE)
 data_v <- read.csv("garza_volcano.csv", header = TRUE)
+data_pca <- read.csv("garza_pca.csv", header = TRUE)
 ```
 
 ```{r, echo = FALSE, include=FALSE}
@@ -89,4 +92,39 @@ ggsave("volcano_199.tiff", dpi = 300, units = c("in"), width = 7, height = 5) # 
 ggsave("volcano_59.tiff", dpi = 300, units = c("in"), width = 7, height = 5) # p_value 2.5, fold 1.8를 기준
 
 ggsave("volcano_nolabel.tiff", dpi = 300, units = c("in"), width = 7, height = 5) # text_repel 주석처리
+```
+
+## data subsetting for PCA, PCA analysis, plot
+```{r, echo=FALSE, include=FALSE}
+data.t <-data.frame(t(data_pca[4:13])) # matrix transpose, col에 gene, raw에 실험이 가도록
+colnames(data.t) <- data_pca$gene # column name을 gene symbol로 바꿈.
+
+data.pca <- prcomp(data.t, scale. =TRUE) # PCA 시행.
+summary(data.pca)
+
+# screeplot(data.pca) PC들의 분산들에 대해 plot. 이것 보단 variance propotion이 나은듯.
+data.pca.var = data.pca$sdev ^ 2 # 주성분들의 분산 계산
+data.pca.pve = data.pca.var / sum(data.pca.var) #주성분 분산의 propotion 계산
+plot (data.pca.pve, xlab = "Principal Component", ylab = "Propotion of Variance Explained", ylim = c(0,0.4), type = "b")
+data.pca.scores = data.frame(data.pca$x) #PC들만 따로 뽑기.
+
+group <- factor(c("Haired", "Haired", "Haired","Haired","Haired", "Bald", "Bald","Bald","Bald","Bald")) # gene group naming
+rep <- factor(c("Rep1", "Rep2", "Rep3","Rep4", "Rep5", "Rep1", "Rep2", "Rep3", "Rep4", "Rep5" )) # replication naming
+data.pca.scores <- cbind(data.pca.scores, group, rep) # PC matrix에 data labeling
+
+#graph 그리기
+ggplot(data.pca.scores, aes(PC1, PC2)) + 
+  # point layer 추가, 이중 point 로 그림 그리기
+  geom_point(aes(color=group), size = 4) +
+  geom_point(color="#FFFFFF", size = 1.5, show.legend = TRUE) +
+  # Point 오른쪽에 text 추가
+  geom_text(aes(label=rep, color= group), size =5, nudge_x= 25, show.legend = FALSE) +
+  # 배경을 하얀색으로, axis label size과 title size 조절
+  theme_bw() + theme(axis.text =element_text(size = rel(1.2))) +
+  theme(axis.title=element_text(size=rel(1.5))) +
+  # legend tilte없애고, box를 하얀색으로 안보이게, legend size조절.
+  theme(legend.title=element_blank(),legend.key = element_rect(color = "#FFFFFF"), legend.text = element_text(size = rel(1.2) )) +
+  labs(x = "PC1(39.4%)", y = "PC2(17.2%)")
+
+ggsave("PCA_haired_bald.tiff", dpi = 300, units = c("in"), width = 7, height = 5)
 ```
