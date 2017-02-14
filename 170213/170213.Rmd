@@ -1,0 +1,48 @@
+---
+title: "170213"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r, echo = FALSE, include = FALSE}
+# Data load & library load
+require(reshape2)
+require(gplots)
+require(preprocessCore)
+require(RColorBrewer)
+require(ggplot2)
+require(ggrepel)
+require(affy)
+
+setwd("~/Documents/R/R_nipple/170213")
+CT <- read.csv("CT.csv", header = TRUE)
+RT <- read.csv("RT.csv", header = TRUE)
+```
+
+```{r, echo = FALSE, include=FALSE}
+# data matrix conversion
+CT_m <-as.matrix(CT[3:9])
+rownames(CT_m) <- t(CT[2])
+
+RT_m <-as.matrix(RT[3:9])
+rownames(RT_m) <- t(RT[2])
+
+```
+
+
+## heatmap plot
+```{r, echo=FALSE, include=FALSE}
+hr <- colorRampPalette(c("firebrick2", "lightgoldenrodyellow", "darkolivegreen4"))(n = 299)
+
+tiff(filename = "CT_heatmap.tif", width = 5, height = 7, units = "in", res=300)
+heatmap.2(CT_m, col=hr, scale = "row", cexCol = 1, labRow = NA, key = TRUE, keysize = 1.5, trace = "none", density.info = "none", dendrogram = "none", Rowv=FALSE, Colv = FALSE)
+dev.off() 
+
+tiff(filename = "RT_heatmap.tif", width = 5, height = 7, units = "in", res=300)
+heatmap.2(RT_m, col=hr, scale = "row", cexCol = 1, labRow = NA, key = TRUE, keysize = 1.5, trace = "none", density.info = "none", dendrogram = "none", Rowv=FALSE, Colv = FALSE)
+dev.off() 
+```
