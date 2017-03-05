@@ -1,0 +1,52 @@
+---
+title: '170305'
+author: "Hyunsu Lee"
+date: "3/5/2017"
+output: html_document
+---
+
+```{r, echo = FALSE, include = FALSE}
+# Data load & library load
+require(reshape2)
+require(gplots)
+require(preprocessCore)
+require(RColorBrewer)
+require(ggplot2)
+require(ggrepel)
+require(affy)
+
+CRT <- read.csv("crt.csv", header = TRUE)
+DRT <- read.csv("drt.csv", header = TRUE)
+VRT <- read.csv("vrt.csv", header = TRUE)
+```
+
+## data matrix conversion
+```{r, echo = FALSE, include=FALSE}
+# data matrix conversion
+CRT_m <-as.matrix(CRT[3:9])
+rownames(CRT_m) <- t(CRT[2])
+
+DRT_m <-as.matrix(DRT[3:9])
+rownames(DRT_m) <- t(DRT[2])
+
+VRT_m <-as.matrix(VRT[3:9])
+rownames(VRT_m) <- t(VRT[2])
+
+```
+
+## heatmap plot
+```{r, echo=FALSE, include=FALSE}
+hr <- colorRampPalette(c("firebrick2", "lightgoldenrodyellow", "darkolivegreen4"))(n = 299)
+
+tiff(filename = "CRT_heatmap.tif", width = 5, height = 7, units = "in", res=300)
+heatmap.2(CRT_m, col=hr, scale = "row", cexCol = 1, labRow = NA, key = TRUE, keysize = 1.5, trace = "none", density.info = "none", dendrogram = "none", Rowv=FALSE, Colv = FALSE)
+dev.off() 
+
+tiff(filename = "DRT_heatmap.tif", width = 5, height = 7, units = "in", res=300)
+heatmap.2(DRT_m, col=hr, scale = "row", cexCol = 1, labRow = NA, key = TRUE, keysize = 1.5, trace = "none", density.info = "none", dendrogram = "none", Rowv=FALSE, Colv = FALSE)
+dev.off() 
+
+tiff(filename = "VRT_heatmap.tif", width = 5, height = 7, units = "in", res=300)
+heatmap.2(VRT_m, col=hr, scale = "row", cexCol = 1, labRow = NA, key = TRUE, keysize = 1.5, trace = "none", density.info = "none", dendrogram = "none", Rowv=FALSE, Colv = FALSE)
+dev.off() 
+```
