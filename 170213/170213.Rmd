@@ -18,7 +18,7 @@ require(ggplot2)
 require(ggrepel)
 require(affy)
 
-setwd("~/Documents/R/R_nipple/170213")
+#setwd("~/Documents/R/R_nipple/170213")
 CT <- read.csv("CT.csv", header = TRUE)
 RT <- read.csv("RT.csv", header = TRUE)
 ```
