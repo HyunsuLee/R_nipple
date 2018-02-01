@@ -15,8 +15,7 @@ require(RColorBrewer)
 
 D33 <- read.csv("new_D33.csv", header = TRUE)
 AD <- read.csv("new_AD.csv", header = TRUE)
-RIB <- read.csv("new_RIB.csv", header = TRUE)
-```
+RIB <- read.csv("new_RIB.csv", header = TRU```
 
 ```{r, echo=FALSE, include=FALSE}
 ## Definefunction 
